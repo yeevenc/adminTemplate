@@ -18,15 +18,17 @@ const DASHBOARD_TAB: TabItem = {
 
 const tabs = ref<TabItem[]>([DASHBOARD_TAB])
 const activeTabName = ref<string>('dashboard')
+const cachedViews = computed(() => tabs.value.map(t => t.name))
 
 export function useTabs() {
-  const cachedViews = computed(() => tabs.value.map(t => t.name))
 
   function addTab(route: RouteLocationNormalizedLoaded): void {
     const name = String(route.name ?? '')
     if (!name || route.meta?.hidden) return
-    const exists = tabs.value.find(t => t.name === name)
-    if (!exists) {
+    const existing = tabs.value.find(t => t.name === name)
+    if (existing) {
+      existing.path = route.fullPath
+    } else {
       tabs.value.push({
         name,
         title: String(route.meta?.title ?? name),
@@ -40,6 +42,7 @@ export function useTabs() {
   function removeTab(name: string): void {
     const idx = tabs.value.findIndex(t => t.name === name)
     if (idx === -1) return
+    if (!tabs.value[idx].closable) return
     tabs.value.splice(idx, 1)
     if (activeTabName.value === name) {
       const nextTab = tabs.value[idx] ?? tabs.value[idx - 1]
