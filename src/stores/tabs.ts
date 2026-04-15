@@ -1,5 +1,7 @@
 import { ref, computed } from 'vue'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
+// Direct import for programmatic navigation after tab removal.
+// No circular dep: router does not import this store.
 import router from '../router'
 
 export interface TabItem {
@@ -17,7 +19,7 @@ const DASHBOARD_TAB: TabItem = {
 }
 
 const tabs = ref<TabItem[]>([DASHBOARD_TAB])
-const activeTabName = ref<string>('dashboard')
+const activeTabName = ref<string>(DASHBOARD_TAB.name)
 const cachedViews = computed(() => tabs.value.map(t => t.name))
 
 export function useTabs() {
@@ -33,7 +35,7 @@ export function useTabs() {
         name,
         title: String(route.meta?.title ?? name),
         path: route.fullPath,
-        closable: name !== 'dashboard',
+        closable: name !== DASHBOARD_TAB.name,
       })
     }
     activeTabName.value = name
@@ -53,6 +55,7 @@ export function useTabs() {
     }
   }
 
+  // Called by TagBar on click for immediate visual feedback before route watcher fires
   function setActive(name: string): void {
     activeTabName.value = name
   }

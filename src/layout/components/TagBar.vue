@@ -3,11 +3,12 @@ import { useRouter } from 'vue-router'
 import { useTabs, type TabItem } from '../../stores/tabs'
 
 const router = useRouter()
-const { tabs, activeTabName, removeTab } = useTabs()
+const { tabs, activeTabName, removeTab, setActive } = useTabs()
 
 function onTabClick(tab: TabItem) {
   if (tab.name !== activeTabName.value) {
-    router.push(tab.path)
+    setActive(tab.name)   // immediate visual update
+    router.push(tab.path) // async navigation
   }
 }
 

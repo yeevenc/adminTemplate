@@ -45,8 +45,8 @@ function buildMenuTree(routes: RouteRecordRaw[], basePath = '/'): MenuNode[] {
 }
 
 const menuTree = computed<MenuNode[]>(() => {
-  const layoutRoute = router.options.routes[0]
-  const kids = (layoutRoute as { children?: RouteRecordRaw[] }).children ?? []
+  const layoutRoute = router.options.routes.find(r => r.path === '/')
+  const kids = (layoutRoute as RouteRecordRaw & { children?: RouteRecordRaw[] })?.children ?? []
   return buildMenuTree(kids)
 })
 
@@ -91,7 +91,7 @@ function onSelect(index: string) {
         <el-menu-item v-if="!node.children" :index="node.fullPath">
           <span class="menu-icon">
             <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-              <path :d="ICONS[node.icon]" />
+              <path :d="ICONS[node.icon] ?? ''" />
             </svg>
           </span>
           <template #title>{{ node.title }}</template>
@@ -101,7 +101,7 @@ function onSelect(index: string) {
           <template #title>
             <span class="menu-icon">
               <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                <path :d="ICONS[node.icon]" />
+                <path :d="ICONS[node.icon] ?? ''" />
               </svg>
             </span>
             <span>{{ node.title }}</span>
