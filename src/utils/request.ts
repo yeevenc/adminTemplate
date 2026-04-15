@@ -88,7 +88,12 @@ function createRequestService(): AxiosInstance {
 
       if (responseData.code === UNAUTHORIZED_CODE) {
         removeToken()
-        router.push('/login')
+        if (!isRedirectingToLogin && router.currentRoute.value.path !== '/login') {
+          isRedirectingToLogin = true
+          router.push('/login').finally(() => {
+            isRedirectingToLogin = false
+          })
+        }
         return Promise.reject(responseData)
       }
 
