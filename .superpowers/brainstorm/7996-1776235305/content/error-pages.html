@@ -1,0 +1,45 @@
+<h2>404 / 500 错误页风格</h2>
+<p class="subtitle">错误页保持相同的星云背景，选择错误信息的呈现方式</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:linear-gradient(135deg,#1a0d2e 0%,#0d1a2e 50%,#0a1a24 100%);border-radius:8px;height:200px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+        <div style="position:absolute;top:-20px;left:-20px;width:160px;height:100px;background:radial-gradient(ellipse,rgba(139,92,246,0.3) 0%,transparent 65%);filter:blur(30px);"></div>
+        <div style="position:absolute;bottom:-10px;right:-10px;width:120px;height:80px;background:radial-gradient(ellipse,rgba(99,102,241,0.25) 0%,transparent 65%);filter:blur(25px);"></div>
+        <div style="text-align:center;position:relative;z-index:1;">
+          <div style="font-size:48px;font-weight:900;background:linear-gradient(135deg,#8B5CF6,#6366F1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:4px;">404</div>
+          <div style="font-size:9px;color:rgba(255,255,255,0.6);margin-bottom:10px;">页面未找到</div>
+          <div style="background:rgba(139,92,246,0.25);border:1px solid rgba(139,92,246,0.4);border-radius:6px;padding:4px 12px;display:inline-block;font-size:7px;color:rgba(255,255,255,0.7);">返回首页</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · 大号状态码 + 简洁文案</h3>
+      <p>渐变超大数字为视觉焦点，配简短说明与返回按钮。干净有力。<strong>推荐</strong></p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:linear-gradient(135deg,#1a0d2e 0%,#0d1a2e 50%,#0a1a24 100%);border-radius:8px;height:200px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+        <div style="position:absolute;top:-10px;right:-10px;width:130px;height:90px;background:radial-gradient(ellipse,rgba(139,92,246,0.28) 0%,transparent 65%);filter:blur(28px);"></div>
+        <div style="text-align:center;position:relative;z-index:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:16px 20px;backdrop-filter:blur(10px);">
+          <div style="font-size:28px;margin-bottom:4px;">🌙</div>
+          <div style="font-size:14px;font-weight:700;color:rgba(255,255,255,0.85);margin-bottom:2px;">404</div>
+          <div style="font-size:8px;color:rgba(255,255,255,0.5);margin-bottom:10px;">哎呀，这个页面睡着了…</div>
+          <div style="display:flex;gap:6px;justify-content:center;">
+            <div style="background:rgba(139,92,246,0.7);border-radius:5px;padding:3px 8px;font-size:6.5px;color:white;">返回首页</div>
+            <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:5px;padding:3px 8px;font-size:6.5px;color:rgba(255,255,255,0.6);">上一页</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B · 玻璃卡片 + 趣味文案</h3>
+      <p>与登录页同款玻璃卡片，配有睡眠主题 emoji 和趣味文案（「页面睡着了」），品牌感更强。</p>
+    </div>
+  </div>
+
+</div>

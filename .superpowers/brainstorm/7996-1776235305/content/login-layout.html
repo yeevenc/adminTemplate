@@ -1,0 +1,79 @@
+<h2>登录页布局方案</h2>
+<p class="subtitle">为 PandaSleep Admin 选择登录页的整体布局风格</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background: linear-gradient(135deg, #1a0d2e 0%, #0d1a2e 50%, #0a1a24 100%); border-radius: 8px; height: 200px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+        <!-- nebula blobs -->
+        <div style="position:absolute;top:-30px;left:-30px;width:180px;height:120px;background:radial-gradient(ellipse,rgba(139,92,246,0.35) 0%,transparent 65%);filter:blur(30px);border-radius:50%;"></div>
+        <div style="position:absolute;bottom:-20px;right:-20px;width:140px;height:100px;background:radial-gradient(ellipse,rgba(99,102,241,0.25) 0%,transparent 65%);filter:blur(25px);border-radius:50%;"></div>
+        <!-- centered card -->
+        <div style="width:140px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:16px;position:relative;z-index:1;backdrop-filter:blur(10px);">
+          <div style="text-align:center;margin-bottom:10px;">
+            <div style="width:28px;height:28px;background:rgba(139,92,246,0.3);border-radius:8px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;">🐼</div>
+            <div style="font-size:9px;color:rgba(255,255,255,0.7);font-weight:600;">PandaSleep Admin</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:6px;height:18px;margin-bottom:6px;"></div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:6px;height:18px;margin-bottom:8px;"></div>
+          <div style="background:rgba(139,92,246,0.8);border-radius:6px;height:18px;display:flex;align-items:center;justify-content:center;"><span style="font-size:7px;color:white;font-weight:600;">登 录</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · 居中卡片式</h3>
+      <p>全屏星云背景，中央玻璃拟态登录卡片。简洁优雅，与现有管理页风格高度统一。<strong>推荐</strong></p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background: linear-gradient(135deg, #1a0d2e 0%, #0d1a2e 100%); border-radius: 8px; height: 200px; display: flex; overflow: hidden; position:relative;">
+        <!-- left panel -->
+        <div style="width:48%;background:rgba(139,92,246,0.15);border-right:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;">
+          <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 40%,rgba(139,92,246,0.3) 0%,transparent 70%);filter:blur(20px);"></div>
+          <div style="position:relative;z-index:1;text-align:center;">
+            <div style="font-size:24px;margin-bottom:4px;">🐼</div>
+            <div style="font-size:8px;color:rgba(255,255,255,0.85);font-weight:700;letter-spacing:1px;">PANDA SLEEP</div>
+            <div style="font-size:6px;color:rgba(255,255,255,0.45);margin-top:2px;">智慧睡眠管理平台</div>
+          </div>
+        </div>
+        <!-- right panel: form -->
+        <div style="width:52%;padding:16px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:9px;color:rgba(255,255,255,0.8);font-weight:700;margin-bottom:10px;">欢迎回来</div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:6px;height:16px;margin-bottom:6px;"></div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:6px;height:16px;margin-bottom:8px;"></div>
+          <div style="background:rgba(139,92,246,0.75);border-radius:6px;height:16px;display:flex;align-items:center;justify-content:center;"><span style="font-size:7px;color:white;font-weight:600;">登 录</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B · 左右分屏式</h3>
+      <p>左侧品牌展示区（Logo + 宣传语），右侧登录表单。更有视觉冲击力，适合品牌强化。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background: linear-gradient(135deg, #f5f0ff 0%, #eef2ff 50%, #f0faf8 100%); border-radius: 8px; height: 200px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+        <div style="position:absolute;top:-20px;right:-20px;width:120px;height:80px;background:radial-gradient(ellipse,rgba(139,92,246,0.15) 0%,transparent 65%);filter:blur(25px);border-radius:50%;"></div>
+        <!-- centered card light mode -->
+        <div style="width:140px;background:rgba(255,255,255,0.85);border:1px solid rgba(139,92,246,0.15);border-radius:12px;padding:16px;box-shadow:0 8px 32px rgba(139,92,246,0.12);">
+          <div style="text-align:center;margin-bottom:10px;">
+            <div style="font-size:18px;margin-bottom:4px;">🐼</div>
+            <div style="font-size:8px;color:#4B3A8C;font-weight:700;">PandaSleep Admin</div>
+          </div>
+          <div style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.15);border-radius:6px;height:18px;margin-bottom:6px;"></div>
+          <div style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.15);border-radius:6px;height:18px;margin-bottom:8px;"></div>
+          <div style="background:linear-gradient(90deg,#8B5CF6,#6366F1);border-radius:6px;height:18px;display:flex;align-items:center;justify-content:center;"><span style="font-size:7px;color:white;font-weight:600;">登 录</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C · 浅色居中式</h3>
+      <p>浅色星云背景，白色卡片，更清爽通透。适合偏好亮色风格的场景。</p>
+    </div>
+  </div>
+
+</div>

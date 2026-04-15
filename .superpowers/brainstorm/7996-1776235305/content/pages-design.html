@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>页面设计预览</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'PingFang SC', sans-serif; background: #0f0b1e; color: #F1F5F9; }
+
+h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; color: #F1F5F9; }
+.subtitle { font-size: 13px; color: #64748B; margin-bottom: 28px; }
+
+.section-title {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: #8B5CF6; margin: 0 0 16px;
+  padding: 0 0 8px; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.previews { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; max-width: 960px; margin: 0 auto; }
+
+/* ─── Login Preview ─── */
+.login-preview {
+  aspect-ratio: 4/3;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #12082a 0%, #0c1428 50%, #081420 100%);
+}
+.nebula1 {
+  position: absolute; top: -60px; left: -60px;
+  width: 340px; height: 200px;
+  background: radial-gradient(ellipse, rgba(139,92,246,0.32) 0%, transparent 65%);
+  filter: blur(60px); border-radius: 50%;
+}
+.nebula2 {
+  position: absolute; bottom: -40px; right: -40px;
+  width: 260px; height: 160px;
+  background: radial-gradient(ellipse, rgba(99,102,241,0.25) 0%, transparent 65%);
+  filter: blur(50px); border-radius: 50%;
+}
+.login-card {
+  position: relative; z-index: 1;
+  width: 240px;
+  background: rgba(255,255,255,0.065);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 28px 26px;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.login-logo {
+  text-align: center; margin-bottom: 20px;
+}
+.logo-icon {
+  width: 44px; height: 44px;
+  background: rgba(139,92,246,0.25);
+  border: 1px solid rgba(139,92,246,0.35);
+  border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 8px;
+}
+.logo-title { font-size: 13px; font-weight: 700; color: #F1F5F9; }
+.logo-sub { font-size: 10px; color: #64748B; margin-top: 2px; }
+
+.form-label { font-size: 10px; color: #94A3B8; font-weight: 500; margin-bottom: 5px; display: block; }
+.form-input {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: #F1F5F9;
+  margin-bottom: 12px;
+}
+.form-input::placeholder { color: #475569; }
+.login-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #8B5CF6, #6366F1);
+  border: none; border-radius: 8px;
+  padding: 9px;
+  font-size: 11px; font-weight: 600; color: white;
+  cursor: pointer; margin-top: 4px;
+  box-shadow: 0 4px 20px rgba(139,92,246,0.4);
+}
+
+/* ─── Error Previews ─── */
+.error-previews { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.error-preview {
+  aspect-ratio: 4/3;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #12082a 0%, #0c1428 50%, #081420 100%);
+  text-align: center;
+}
+.err-nebula {
+  position: absolute; top: -30px; left: -30px;
+  width: 200px; height: 120px;
+  filter: blur(40px); border-radius: 50%;
+}
+.err-code {
+  font-size: 54px; font-weight: 900; line-height: 1;
+  margin-bottom: 6px;
+}
+.err-404 { background: linear-gradient(135deg, #8B5CF6, #6366F1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.err-500 { background: linear-gradient(135deg, #EF4444, #F97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.err-title { font-size: 11px; color: rgba(255,255,255,0.55); margin-bottom: 12px; }
+.err-btn {
+  display: inline-block;
+  background: rgba(139,92,246,0.2);
+  border: 1px solid rgba(139,92,246,0.4);
+  border-radius: 6px; padding: 5px 14px;
+  font-size: 9px; color: rgba(255,255,255,0.75);
+}
+.err-500-btn {
+  background: rgba(239,68,68,0.15);
+  border-color: rgba(239,68,68,0.35);
+}
+
+.panel { }
+.panel + .panel { margin-top: 28px; }
+</style>
+</head>
+<body>
+<div style="padding: 24px 20px; max-width: 900px; margin: 0 auto;">
+
+  <h2>页面设计预览</h2>
+  <p class="subtitle">登录页 + 错误页效果一览</p>
+
+  <div class="panel">
+    <p class="section-title">登录页 — /login</p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+      <!-- Login mockup -->
+      <div class="login-preview">
+        <div class="nebula1"></div>
+        <div class="nebula2"></div>
+        <div class="login-card">
+          <div class="login-logo">
+            <div class="logo-icon">🐼</div>
+            <div class="logo-title">PandaSleep Admin</div>
+            <div class="logo-sub">智慧睡眠管理平台</div>
+          </div>
+          <label class="form-label">账号</label>
+          <input class="form-input" placeholder="请输入账号" readonly>
+          <label class="form-label">密码</label>
+          <input class="form-input" placeholder="请输入密码" type="password" readonly>
+          <button class="login-btn">登 录</button>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div style="padding: 8px 0;">
+        <div style="margin-bottom: 14px;">
+          <div style="font-size: 12px; font-weight: 600; color: #F1F5F9; margin-bottom: 4px;">全屏星云背景</div>
+          <div style="font-size: 11px; color: #64748B; line-height: 1.6;">与管理页相同的 nebula 动态背景，主题色随全局设置联动。</div>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <div style="font-size: 12px; font-weight: 600; color: #F1F5F9; margin-bottom: 4px;">玻璃拟态卡片</div>
+          <div style="font-size: 11px; color: #64748B; line-height: 1.6;">半透明背景 + 毛玻璃模糊，与 dashboard 的 glass-card 一致。</div>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <div style="font-size: 12px; font-weight: 600; color: #F1F5F9; margin-bottom: 4px;">表单交互</div>
+          <div style="font-size: 11px; color: #64748B; line-height: 1.6;">账号/密码输入框，回车触发登录，按钮 loading 防重复提交，错误信息内联提示。</div>
+        </div>
+        <div>
+          <div style="font-size: 12px; font-weight: 600; color: #F1F5F9; margin-bottom: 4px;">登录后跳转</div>
+          <div style="font-size: 11px; color: #64748B; line-height: 1.6;">成功 → 跳 redirect 参数指定页 or <code style="color:#8B5CF6">/ </code>；已登录访问 /login → 直接跳 /。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top: 28px;">
+    <p class="section-title">错误页 — /404 · /500</p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+      <!-- 404 -->
+      <div class="error-preview">
+        <div class="err-nebula" style="background: radial-gradient(ellipse, rgba(139,92,246,0.3) 0%, transparent 65%);"></div>
+        <div style="position: relative; z-index: 1;">
+          <div class="err-code err-404">404</div>
+          <div class="err-title">页面未找到</div>
+          <div class="err-btn">返回首页</div>
+        </div>
+      </div>
+      <!-- 500 -->
+      <div class="error-preview">
+        <div class="err-nebula" style="background: radial-gradient(ellipse, rgba(239,68,68,0.25) 0%, transparent 65%);"></div>
+        <div style="position: relative; z-index: 1;">
+          <div class="err-code err-500">500</div>
+          <div class="err-title">服务器开了个小差</div>
+          <div class="err-btn err-500-btn">返回首页</div>
+        </div>
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;">
+      <div style="font-size: 11px; color: #64748B; line-height: 1.6; padding: 0 4px;">
+        路由不存在时渲染，404 状态码用紫色渐变，点击「返回首页」跳 <code style="color:#8B5CF6">/</code>，同时提供「上一页」。
+      </div>
+      <div style="font-size: 11px; color: #64748B; line-height: 1.6; padding: 0 4px;">
+        接口 HTTP 500 时由拦截器跳转渲染，状态码用红橙渐变，点「返回首页」跳 <code style="color:#EF4444">/</code>。
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
