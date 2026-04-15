@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ name: 'dashboard' })
 import { computed } from 'vue'
 import { useTheme } from '../../stores/theme'
 
