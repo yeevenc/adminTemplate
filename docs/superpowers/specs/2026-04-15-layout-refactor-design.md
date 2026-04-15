@@ -45,7 +45,7 @@ bg-scene (position:fixed, z-index:0, nebula clouds — unchanged)
 - Replace `<aside>` / `.layout-main` with `el-aside` + inner `el-container`.
 - Keep `bg-scene` div (position:fixed nebula, unchanged).
 - Add `<TagBar />` between `el-header` and `el-main`.
-- Wrap `<RouterView />` with `<KeepAlive :include="cachedViews">`.
+- Wrap `<RouterView />` with Element Plus transition + KeepAlive (see below).
 - `cachedViews` comes from the tabs store computed.
 
 ### `src/layout/components/Sidebar.vue`
@@ -106,6 +106,24 @@ Logic:
 - `removeTab(name)`: removes tab; if it was active, navigates to adjacent tab.
 - `setActive(name)`: updates active without adding.
 - Initialized with the dashboard tab on store creation.
+
+### Page Transition
+
+Use the `<router-view>` slot pattern with an Element Plus transition wrapping KeepAlive:
+
+```vue
+<router-view v-slot="{ Component, route }">
+  <transition name="el-fade-in-linear" mode="out-in">
+    <keep-alive :include="cachedViews">
+      <component :is="Component" :key="route.name" />
+    </keep-alive>
+  </transition>
+</router-view>
+```
+
+- Transition name: `el-fade-in-linear` (built-in Element Plus transition, smooth and subtle).
+- `mode="out-in"`: outgoing page fades out before incoming fades in.
+- `:key="route.name"` ensures the transition triggers on every route change.
 
 ### `src/router/index.ts`
 
