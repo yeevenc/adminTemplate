@@ -87,6 +87,7 @@ function createRequestService(): AxiosInstance {
       if (responseData.code === UNAUTHORIZED_CODE) {
         removeToken()
         router.push('/login')
+        return Promise.reject(responseData)
       }
 
       if (shouldShowError(requestConfig)) {
@@ -96,27 +97,30 @@ function createRequestService(): AxiosInstance {
       return Promise.reject(responseData)
     },
     (error: AxiosError<ApiResponseData>) => {
-      const requestConfig = error.config as RequestConfig | undefined
-      const status = error.response?.status
-      const message = error.response?.data?.message || error.message || DEFAULT_ERROR_MESSAGE
+    const requestConfig = error.config as RequestConfig | undefined
+    const status = error.response?.status
+    const message = error.response?.data?.message || error.message || DEFAULT_ERROR_MESSAGE
 
-      if (status === 401) {
-        removeToken()
+    if (status === 401) {
+      removeToken()
+      if (router.currentRoute.value.path !== '/login') {
         router.push('/login')
         return Promise.reject(error)
       }
+      // On login page: fall through so showErrorMessage runs below
+    }
 
-      if (status === 500) {
-        router.push('/500')
-        return Promise.reject(error)
-      }
-
-      if (shouldShowError(requestConfig)) {
-        showErrorMessage(message)
-      }
-
+    if (status === 500) {
+      router.push('/500')
       return Promise.reject(error)
-    },
+    }
+
+    if (shouldShowError(requestConfig)) {
+      showErrorMessage(message)
+    }
+
+    return Promise.reject(error)
+  },
   )
 
   return service

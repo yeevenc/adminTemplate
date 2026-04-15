@@ -16,6 +16,10 @@ const { loginAction } = useUser()
 const form = ref({ username: '', password: '' })
 const loading = ref(false)
 
+function isSafeRedirect(redirect: string | undefined): redirect is string {
+  return typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')
+}
+
 async function handleLogin() {
   if (!form.value.username.trim() || !form.value.password) {
     ElMessage.warning('请输入账号和密码')
@@ -26,7 +30,9 @@ async function handleLogin() {
     const res = await login(form.value)
     loginAction(res.data.token)
     const redirect = route.query.redirect as string | undefined
-    router.push(redirect || '/')
+    router.push(isSafeRedirect(redirect) ? redirect : '/')
+  } catch {
+    ElMessage.error('账号或密码错误')
   } finally {
     loading.value = false
   }
