@@ -17,14 +17,17 @@ function onTabClose(tab: TabItem) {
 </script>
 
 <template>
-  <div class="tag-bar">
-    <div class="tag-bar-inner">
+  <nav class="tag-bar" aria-label="已打开的页面">
+    <div class="tag-bar-inner" role="tablist">
       <el-tag
         v-for="tab in tabs"
         :key="tab.name"
+        role="tab"
+        :aria-selected="tab.name === activeTabName"
+        :title="tab.title"
         :closable="tab.closable"
         :effect="tab.name === activeTabName ? 'dark' : 'plain'"
-        :type="tab.name === activeTabName ? '' : 'info'"
+        :type="tab.name === activeTabName ? 'primary' : 'info'"
         round
         class="tab-tag"
         :class="{ 'is-active': tab.name === activeTabName }"
@@ -34,7 +37,7 @@ function onTabClose(tab: TabItem) {
         {{ tab.title }}
       </el-tag>
     </div>
-  </div>
+  </nav>
 </template>
 
 <style scoped>
@@ -58,6 +61,8 @@ function onTabClose(tab: TabItem) {
   gap: 6px;
   overflow-x: auto;
   overflow-y: hidden;
+  flex: 1;
+  min-width: 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
