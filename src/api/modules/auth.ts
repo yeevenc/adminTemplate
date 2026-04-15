@@ -10,5 +10,5 @@ export interface LoginResult {
 }
 
 export function login(data: LoginParams): Promise<ApiResponseData<LoginResult>> {
-  return post<LoginResult, LoginParams>('/auth/login', data, { withToken: false })
+  return post<LoginResult, LoginParams>('/auth/login', data, { withToken: false, showError: false })
 }

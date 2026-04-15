@@ -10,6 +10,8 @@ import { ElMessage } from 'element-plus'
 import { getToken, removeToken } from './auth'
 import router from '../router'
 
+let isRedirectingToLogin = false
+
 export interface ApiResponseData<T = unknown> {
   code: number
   data: T
@@ -103,11 +105,14 @@ function createRequestService(): AxiosInstance {
 
     if (status === 401) {
       removeToken()
-      if (router.currentRoute.value.path !== '/login') {
-        router.push('/login')
+      if (!isRedirectingToLogin && router.currentRoute.value.path !== '/login') {
+        isRedirectingToLogin = true
+        router.push('/login').finally(() => {
+          isRedirectingToLogin = false
+        })
         return Promise.reject(error)
       }
-      // On login page: fall through so showErrorMessage runs below
+      // On login page (or redirect already in progress): fall through so showErrorMessage runs below
     }
 
     if (status === 500) {
