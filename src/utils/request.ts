@@ -8,6 +8,7 @@ import axios, {
 } from 'axios'
 import { ElMessage } from 'element-plus'
 import { getToken, removeToken } from './auth'
+import router from '../router'
 
 export interface ApiResponseData<T = unknown> {
   code: number
@@ -85,6 +86,7 @@ function createRequestService(): AxiosInstance {
 
       if (responseData.code === UNAUTHORIZED_CODE) {
         removeToken()
+        router.push('/login')
       }
 
       if (shouldShowError(requestConfig)) {
@@ -95,7 +97,19 @@ function createRequestService(): AxiosInstance {
     },
     (error: AxiosError<ApiResponseData>) => {
       const requestConfig = error.config as RequestConfig | undefined
+      const status = error.response?.status
       const message = error.response?.data?.message || error.message || DEFAULT_ERROR_MESSAGE
+
+      if (status === 401) {
+        removeToken()
+        router.push('/login')
+        return Promise.reject(error)
+      }
+
+      if (status === 500) {
+        router.push('/500')
+        return Promise.reject(error)
+      }
 
       if (shouldShowError(requestConfig)) {
         showErrorMessage(message)
