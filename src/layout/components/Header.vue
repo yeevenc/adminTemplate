@@ -22,21 +22,7 @@ const presetColors = THEMES.map(t => t.color)
 </script>
 
 <template>
-  <header class="layout-header">
-    <!-- Left: breadcrumb -->
-    <div class="header-left">
-      <span class="header-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-          <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
-        </svg>
-      </span>
-      <nav class="breadcrumb" aria-label="当前位置">
-        <span class="breadcrumb-root">管理后台</span>
-        <span class="breadcrumb-sep" aria-hidden="true">/</span>
-        <span class="breadcrumb-current">{{ state.menuTitle }}</span>
-      </nav>
-    </div>
-
+  <div class="layout-header">
     <!-- Right: controls -->
     <div class="header-right">
       <!-- Element Plus color picker -->
@@ -111,60 +97,20 @@ const presetColors = THEMES.map(t => t.color)
         </Transition>
       </div>
     </div>
-  </header>
+  </div>
 </template>
 
 <style scoped>
 .layout-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
+  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 64px;
+  justify-content: flex-end;
   padding: 0 24px;
   background: var(--glass-bg);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-bottom: 1px solid var(--glass-border);
-  flex-shrink: 0;
-}
-
-/* Left */
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.header-icon {
-  display: flex;
-  color: var(--color-primary);
-  filter: drop-shadow(0 0 6px var(--color-glow));
-}
-
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13.5px;
-}
-
-.breadcrumb-root {
-  color: var(--text-muted);
-  font-weight: 400;
-}
-
-.breadcrumb-sep {
-  color: var(--text-muted);
-  opacity: 0.5;
-}
-
-.breadcrumb-current {
-  color: var(--text-primary);
-  font-weight: 600;
-  font-size: 15px;
 }
 
 /* Right */

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { computed } from 'vue'
 import { useRouter, useRoute, type RouteRecordRaw } from 'vue-router'
 import { useTheme } from '../../stores/theme'
 
-const { state, setMenuTitle, toggleCollapse } = useTheme()
+const { state, toggleCollapse } = useTheme()
 const router = useRouter()
 const route = useRoute()
 
@@ -50,40 +50,19 @@ const menuTree = computed<MenuNode[]>(() => {
   return buildMenuTree(kids)
 })
 
-const expandedIds = ref<Set<string>>(new Set())
+const defaultOpeneds = computed(() =>
+  menuTree.value
+    .filter(n => n.children?.some(c => route.path === c.fullPath))
+    .map(n => n.id)
+)
 
-function toggleExpand(id: string) {
-  expandedIds.value.has(id) ? expandedIds.value.delete(id) : expandedIds.value.add(id)
-}
-
-function syncExpanded() {
-  for (const node of menuTree.value) {
-    if (node.children?.some(c => route.path === c.fullPath)) {
-      expandedIds.value.add(node.id)
-    }
-  }
-  if (route.meta?.title) setMenuTitle(String(route.meta.title))
-}
-
-onMounted(syncExpanded)
-watch(() => route.path, syncExpanded)
-
-function navigate(title: string, targetRoute: string) {
-  setMenuTitle(title)
-  router.push(targetRoute)
-}
-
-function isActive(itemRoute: string) {
-  return route.path === itemRoute
-}
-
-function isGroupActive(node: MenuNode): boolean {
-  return node.children?.some(c => isActive(c.fullPath)) ?? false
+function onSelect(index: string) {
+  router.push(index)
 }
 </script>
 
 <template>
-  <aside class="sidebar" :class="{ collapsed: state.collapsed }">
+  <div class="sidebar-wrap">
     <!-- Logo -->
     <div class="sidebar-logo">
       <div class="logo-icon">
@@ -100,67 +79,44 @@ function isGroupActive(node: MenuNode): boolean {
 
     <div class="sidebar-divider" />
 
-    <!-- Navigation -->
-    <nav class="sidebar-nav" role="navigation" aria-label="主导航">
+    <!-- el-menu navigation -->
+    <el-menu
+      :default-active="route.path"
+      :collapse="state.collapsed"
+      :default-openeds="defaultOpeneds"
+      class="sidebar-menu"
+      @select="onSelect"
+    >
       <template v-for="node in menuTree" :key="node.id">
-        <!-- Single route item -->
-        <button
-          v-if="!node.children"
-          class="menu-item"
-          :class="{ active: isActive(node.fullPath) }"
-          @click="navigate(node.title, node.fullPath)"
-        >
-          <span class="menu-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <el-menu-item v-if="!node.children" :index="node.fullPath">
+          <span class="menu-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
               <path :d="ICONS[node.icon]" />
             </svg>
           </span>
-          <Transition name="fade-slide">
-            <span v-if="!state.collapsed" class="menu-label">{{ node.title }}</span>
-          </Transition>
-        </button>
+          <template #title>{{ node.title }}</template>
+        </el-menu-item>
 
-        <!-- Group item with children -->
-        <div v-else class="menu-group">
-          <button
-            class="menu-item"
-            :class="{ 'group-active': isGroupActive(node) }"
-            @click="!state.collapsed && toggleExpand(node.id)"
-          >
-            <span class="menu-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <el-sub-menu v-else :index="node.id">
+          <template #title>
+            <span class="menu-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
                 <path :d="ICONS[node.icon]" />
               </svg>
             </span>
-            <Transition name="fade-slide">
-              <span v-if="!state.collapsed" class="menu-label">{{ node.title }}</span>
-            </Transition>
-            <Transition name="fade-slide">
-              <span v-if="!state.collapsed" class="menu-arrow" :class="{ rotated: expandedIds.has(node.id) }" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
-                  <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
-                </svg>
-              </span>
-            </Transition>
-          </button>
-
-          <Transition name="expand">
-            <div v-if="!state.collapsed && expandedIds.has(node.id)" class="menu-children">
-              <button
-                v-for="child in node.children"
-                :key="child.id"
-                class="menu-child-item"
-                :class="{ active: isActive(child.fullPath) }"
-                @click="navigate(child.title, child.fullPath)"
-              >
-                <span class="child-dot" aria-hidden="true" />
-                <span class="menu-label">{{ child.title }}</span>
-              </button>
-            </div>
-          </Transition>
-        </div>
+            <span>{{ node.title }}</span>
+          </template>
+          <el-menu-item
+            v-for="child in node.children"
+            :key="child.id"
+            :index="child.fullPath"
+          >
+            <span class="child-dot" />
+            <template #title>{{ child.title }}</template>
+          </el-menu-item>
+        </el-sub-menu>
       </template>
-    </nav>
+    </el-menu>
 
     <!-- Collapse toggle -->
     <div class="sidebar-footer">
@@ -177,28 +133,20 @@ function isGroupActive(node: MenuNode): boolean {
         </Transition>
       </button>
     </div>
-  </aside>
+  </div>
 </template>
 
 <style scoped>
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 240px;
+.sidebar-wrap {
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: var(--glass-bg);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-right: 1px solid var(--glass-border);
-  z-index: 100;
-  transition: width 0.32s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
-
-.sidebar.collapsed { width: 64px; }
 
 /* Logo */
 .sidebar-logo {
@@ -234,123 +182,61 @@ function isGroupActive(node: MenuNode): boolean {
   flex-shrink: 0;
 }
 
-/* Nav */
-.sidebar-nav {
+/* ── el-menu overrides ── */
+.sidebar-menu {
   flex: 1;
-  padding: 10px 8px;
   overflow-y: auto;
   overflow-x: hidden;
+  padding: 8px;
+  box-sizing: border-box;
+  --el-menu-bg-color: transparent;
+  --el-menu-hover-bg-color: var(--glass-hover);
+  --el-menu-active-color: #fff;
+  --el-menu-text-color: var(--text-secondary);
+  --el-menu-item-height: 44px;
+  --el-menu-sub-item-height: 40px;
+  --el-menu-item-font-size: 13.5px;
+  --el-menu-icon-width: 20px;
 }
 
-.sidebar-nav::-webkit-scrollbar { width: 3px; }
-.sidebar-nav::-webkit-scrollbar-track { background: transparent; }
-.sidebar-nav::-webkit-scrollbar-thumb {
+.sidebar-menu::-webkit-scrollbar { width: 3px; }
+.sidebar-menu::-webkit-scrollbar-track { background: transparent; }
+.sidebar-menu::-webkit-scrollbar-thumb {
   background: var(--glass-border);
   border-radius: 2px;
 }
 
-/* Menu items */
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 10px;
-  border-radius: 10px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: var(--text-secondary);
-  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-  margin-bottom: 2px;
-  white-space: nowrap;
-  text-align: left;
-  outline: none;
+.sidebar-menu.el-menu {
+  border-right: none !important;
 }
 
-.menu-item:hover {
-  background: var(--glass-hover);
-  color: var(--text-primary);
+.sidebar-menu :deep(.el-menu-item),
+.sidebar-menu :deep(.el-sub-menu__title) {
+  border-radius: 10px !important;
+  margin: 2px 0 !important;
+  color: var(--text-secondary) !important;
+  background-color: transparent !important;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-.menu-item:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-primary);
+.sidebar-menu :deep(.el-menu-item:hover),
+.sidebar-menu :deep(.el-sub-menu__title:hover) {
+  background-color: var(--glass-hover) !important;
+  color: var(--text-primary) !important;
 }
 
-.menu-item.active {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-  color: #fff;
-  box-shadow: 0 4px 18px var(--color-glow);
+.sidebar-menu :deep(.el-menu-item.is-active) {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 18px var(--color-glow) !important;
 }
 
-.menu-item.group-active {
-  color: var(--color-primary-light);
-  background: var(--glass-active);
+.sidebar-menu :deep(.el-sub-menu.is-active > .el-sub-menu__title) {
+  color: var(--color-primary-light) !important;
 }
 
-.menu-icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.menu-icon svg { width: 20px; height: 20px; }
-
-.menu-label {
-  font-size: 13.5px;
-  font-weight: 500;
-  flex: 1;
-}
-
-.menu-arrow {
-  display: flex;
-  align-items: center;
-  transition: transform 0.22s ease;
-  color: var(--text-muted);
-}
-
-.menu-arrow.rotated { transform: rotate(-180deg); }
-
-.menu-group { margin-bottom: 2px; }
-
-.menu-children { padding: 2px 0 2px 12px; }
-
-.menu-child-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: var(--text-muted);
-  transition: background 0.18s ease, color 0.18s ease;
-  margin-bottom: 2px;
-  font-size: 13px;
-  font-weight: 400;
-  white-space: nowrap;
-  text-align: left;
-  outline: none;
-}
-
-.menu-child-item:hover {
-  background: var(--glass-hover);
-  color: var(--text-primary);
-}
-
-.menu-child-item:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-primary);
-}
-
-.menu-child-item.active {
-  color: var(--color-primary-light);
-  background: var(--glass-active);
-  font-weight: 500;
+.sidebar-menu :deep(.el-sub-menu .el-menu) {
+  background-color: transparent !important;
 }
 
 .child-dot {
@@ -358,8 +244,23 @@ function isGroupActive(node: MenuNode): boolean {
   height: 5px;
   border-radius: 50%;
   background: currentColor;
+  opacity: 0.6;
   flex-shrink: 0;
-  opacity: 0.7;
+  margin-right: 8px;
+}
+
+.menu-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.sidebar-menu.el-menu--collapse :deep(.menu-icon) {
+  margin-right: 0;
 }
 
 /* Footer */
@@ -394,11 +295,6 @@ function isGroupActive(node: MenuNode): boolean {
   box-shadow: 0 0 0 2px var(--color-primary);
 }
 
-.sidebar.collapsed .collapse-btn {
-  justify-content: center;
-  padding: 8px;
-}
-
 .collapse-icon {
   width: 14px;
   height: 14px;
@@ -413,7 +309,6 @@ function isGroupActive(node: MenuNode): boolean {
   font-weight: 500;
 }
 
-/* Transitions */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition: opacity 0.18s ease, transform 0.18s ease;
@@ -423,18 +318,5 @@ function isGroupActive(node: MenuNode): boolean {
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateX(-6px);
-}
-
-.expand-enter-active,
-.expand-leave-active {
-  transition: max-height 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
-  max-height: 240px;
-  overflow: hidden;
-}
-
-.expand-enter-from,
-.expand-leave-to {
-  max-height: 0;
-  opacity: 0;
 }
 </style>

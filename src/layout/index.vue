@@ -1,9 +1,19 @@
 <script setup lang="ts">
+import { watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useTheme } from '../stores/theme'
+import { useTabs } from '../stores/tabs'
 import Sidebar from './components/Sidebar.vue'
 import Header from './components/Header.vue'
+import TagBar from './components/TagBar.vue'
 
 const { state } = useTheme()
+const route = useRoute()
+const { cachedViews, addTab } = useTabs()
+
+watch(route, (newRoute) => {
+  addTab(newRoute)
+}, { immediate: true })
 </script>
 
 <template>
@@ -21,27 +31,43 @@ const { state } = useTheme()
       <div class="cloud cw4" />
     </div>
 
-    <Sidebar />
+    <el-container class="layout-container">
+      <el-aside
+        :width="state.collapsed ? '64px' : '240px'"
+        class="layout-aside"
+      >
+        <Sidebar />
+      </el-aside>
 
-    <div class="layout-main" :class="{ collapsed: state.collapsed }">
-      <Header />
-      <main class="layout-content">
-        <RouterView />
-      </main>
-    </div>
+      <el-container direction="vertical">
+        <el-header height="64px" class="layout-header-wrap">
+          <Header />
+        </el-header>
+
+        <TagBar />
+
+        <el-main class="layout-main">
+          <router-view v-slot="{ Component }">
+            <transition name="el-fade-in-linear" mode="out-in">
+              <keep-alive :include="cachedViews">
+                <component :is="Component" />
+              </keep-alive>
+            </transition>
+          </router-view>
+        </el-main>
+      </el-container>
+    </el-container>
   </div>
 </template>
 
 <style scoped>
 .admin-layout {
-  display: flex;
-  min-height: 100vh;
   width: 100%;
-  position: relative;
+  height: 100vh;
   overflow: hidden;
+  position: relative;
   background: var(--gradient-bg);
   background-attachment: fixed;
-  z-index: 0;
   transition: background 0.55s ease;
 }
 
@@ -156,25 +182,29 @@ const { state } = useTheme()
   80%       { transform: translate(6px,   10px) scale(0.98); }
 }
 
-.layout-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  margin-left: 240px;
-  transition: margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+/* ── el-container layout ── */
+.layout-container {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
+  height: 100vh;
 }
 
-.layout-main.collapsed {
-  margin-left: 64px;
+.layout-aside {
+  transition: width 0.32s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden;
+  height: 100%;
+  flex-shrink: 0;
 }
 
-.layout-content {
+.layout-header-wrap {
+  padding: 0 !important;
+  flex-shrink: 0;
+}
+
+.layout-main {
+  padding: 24px !important;
+  overflow-y: auto !important;
   flex: 1;
-  padding: 24px;
-  overflow-y: auto;
   min-height: 0;
 }
 </style>
