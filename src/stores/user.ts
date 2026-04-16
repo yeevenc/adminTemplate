@@ -1,22 +1,52 @@
-import { ref, computed } from 'vue'
-import { getToken, setToken, removeToken } from '../utils/auth'
-import router from '../router'
+import { computed, ref } from 'vue'
+import { defineStore } from 'pinia'
+import { login, type LoginParams, type LoginResult } from '@/api/modules/auth'
+import router from '@/router'
+import { getToken, SLEEP_USER_STORE_STORAGE_KEY } from '@/utils/auth'
 
-const _token = ref(getToken())
+export const useSleepUserStore = defineStore(
+  'sleepUser',
+  () => {
+    const token = ref(getToken() || '')
 
-export function useUser() {
-  const isLoggedIn = computed(() => !!_token.value)
+    const isLoggedIn = computed(() => !!token.value)
 
-  function loginAction(token: string): void {
-    setToken(token)
-    _token.value = token
-  }
+    async function loginAction(params: LoginParams): Promise<LoginResult> {
+      const response = await login(params)
+      setToken(response.data.token)
+      return response.data
+    }
 
-  function logout(): void {
-    removeToken()
-    _token.value = null
-    router.push('/login')
-  }
+    function setToken(value: string) {
+      token.value = value
+    }
 
-  return { isLoggedIn, loginAction, logout }
-}
+    function clearToken() {
+      token.value = ''
+    }
+
+    function logout() {
+      clearToken()
+
+      if (router.currentRoute.value.path !== '/login') {
+        router.push('/login')
+      }
+    }
+
+    return {
+      token,
+      isLoggedIn,
+      loginAction,
+      setToken,
+      clearToken,
+      logout,
+    }
+  },
+  {
+    persist: {
+      key: SLEEP_USER_STORE_STORAGE_KEY,
+      storage: localStorage,
+      pick: ['token'],
+    },
+  },
+)

@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 // Direct import for programmatic navigation after tab removal.
 // No circular dep: router does not import this store.
-import router from '../router'
+import router from '@/router'
 
 export interface TabItem {
   name: string

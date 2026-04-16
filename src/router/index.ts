@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import { getToken } from '../utils/auth'
-
+import { getToken } from '@/utils/auth'
+import { settingRoutes } from '@/router/setting'
 declare module 'vue-router' {
   interface RouteMeta {
     title?: string
@@ -12,12 +12,12 @@ declare module 'vue-router' {
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('../layout/index.vue'),
+    component: () => import('@/layout/index.vue'),
     children: [
       {
         path: '',
         name: 'dashboard',
-        component: () => import('../views/home/index.vue'),
+        component: () => import('@/views/home/index.vue'),
         meta: { title: '数据概览', icon: 'dashboard' },
       },
     ],
@@ -25,19 +25,19 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('../views/login/index.vue'),
+    component: () => import('@/views/login/index.vue'),
     meta: { title: '登录', hidden: true },
   },
   {
     path: '/404',
     name: '404',
-    component: () => import('../views/error/404.vue'),
+    component: () => import('@/views/error/404.vue'),
     meta: { title: '页面未找到', hidden: true },
   },
   {
     path: '/500',
     name: '500',
-    component: () => import('../views/error/500.vue'),
+    component: () => import('@/views/error/500.vue'),
     meta: { title: '服务器错误', hidden: true },
   },
   // Catch-all: redirect unknown paths to /404
@@ -45,6 +45,7 @@ const routes: RouteRecordRaw[] = [
     path: '/:pathMatch(.*)*',
     redirect: '/404',
   },
+  ...settingRoutes
 ]
 
 const router = createRouter({
@@ -54,28 +55,26 @@ const router = createRouter({
 
 const WHITE_LIST = ['/login', '/404', '/500']
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach((to) => {
   const token = getToken()
 
   // Always allow white-listed routes
   if (WHITE_LIST.includes(to.path)) {
     // Already logged in — bounce away from /login to home
     if (token && to.path === '/login') {
-      next('/')
-    } else {
-      next()
+      return '/'
     }
-    return
+
+    return true
   }
 
   // Protected route: require token
   if (token) {
-    next()
-    return
+    return true
   }
 
   // Not authenticated: go to login, preserve intended destination
-  next({ path: '/login', query: { redirect: to.fullPath } })
+  return { path: '/login', query: { redirect: to.fullPath } }
 })
 
 export default router

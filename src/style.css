@@ -119,7 +119,21 @@ a { color: inherit; text-decoration: none; }
 .el-table__inner-wrapper::before {
   display: none !important;
 }
-
+.m-t-10 {
+  margin-top: 10px;
+}
+.m-t-20 {
+  margin-top: 20px;
+}
+.m-t-30 {
+  margin-top: 30px;
+}
+.m-b-10{
+  margin-bottom: 10px;
+}
+.m-b-20{
+  margin-bottom: 20px;
+}
 /* Reduce Motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useTheme } from '../stores/theme'
-import { useTabs } from '../stores/tabs'
-import Sidebar from './components/Sidebar.vue'
-import Header from './components/Header.vue'
-import TagBar from './components/TagBar.vue'
+import { useTheme } from '@/stores/theme'
+import { useTabs } from '@/stores/tabs'
+import Sidebar from '@/layout/components/Sidebar.vue'
+import Header from '@/layout/components/Header.vue'
+import TagBar from '@/layout/components/TagBar.vue'
 
 const { state } = useTheme()
 const route = useRoute()

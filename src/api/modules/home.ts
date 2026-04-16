@@ -1,4 +1,4 @@
-import { get, type ApiResponseData } from '../../utils/request'
+import { get, type ApiResponseData } from '@/utils/request'
 
 export interface HomeInfoItem {
   title: string

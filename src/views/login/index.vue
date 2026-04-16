@@ -2,16 +2,15 @@
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { login } from '../../api/modules/auth'
-import { useUser } from '../../stores/user'
-import { applyTheme } from '../../stores/theme'
+import { useSleepUserStore } from '@/stores/user'
+import { applyTheme } from '@/stores/theme'
 
 // Ensure theme CSS vars are applied (in case of direct navigation)
 applyTheme()
 
 const router = useRouter()
 const route = useRoute()
-const { loginAction } = useUser()
+const userStore = useSleepUserStore()
 
 const form = ref({ username: '', password: '' })
 const loading = ref(false)
@@ -27,8 +26,7 @@ async function handleLogin() {
   }
   loading.value = true
   try {
-    const res = await login(form.value)
-    loginAction(res.data.token)
+    await userStore.loginAction(form.value)
     const redirect = route.query.redirect as string | undefined
     router.push(isSafeRedirect(redirect) ? redirect : '/')
   } catch {

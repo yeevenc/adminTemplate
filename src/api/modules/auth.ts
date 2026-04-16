@@ -1,4 +1,4 @@
-import { post, type ApiResponseData } from '../../utils/request'
+import { post, type ApiResponseData } from '@/utils/request'
 
 export interface LoginParams {
   username: string

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useTabs, type TabItem } from '../../stores/tabs'
+import { useTabs, type TabItem } from '@/stores/tabs'
 
 const router = useRouter()
 const { tabs, activeTabName, removeTab, setActive } = useTabs()

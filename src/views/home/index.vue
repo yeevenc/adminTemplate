@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'dashboard' })
 import { computed } from 'vue'
-import { useTheme } from '../../stores/theme'
+import { useTheme } from '@/stores/theme'
 
 const { currentPreset } = useTheme()
 
@@ -511,4 +511,3 @@ const greeting = computed(() => {
   box-shadow: 0 0 0 2px var(--color-primary);
 }
 </style>
-

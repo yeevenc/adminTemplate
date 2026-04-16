@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter, useRoute, type RouteRecordRaw } from 'vue-router'
-import { useTheme } from '../../stores/theme'
+import { useTheme } from '@/stores/theme'
 
 const { state, toggleCollapse } = useTheme()
 const router = useRouter()
@@ -25,35 +25,57 @@ interface MenuNode {
   children?: MenuNode[]
 }
 
-function buildMenuTree(routes: RouteRecordRaw[], basePath = '/'): MenuNode[] {
-  const nodes: MenuNode[] = []
-  for (const r of routes) {
-    if (!r.meta?.title || r.meta?.hidden) continue
-    const seg = String(r.path)
-    const fullPath = seg === '' ? basePath : basePath === '/' ? `/${seg}` : `${basePath}/${seg}`
-    const rawKids = (r as { children?: RouteRecordRaw[] }).children ?? []
-    const childNodes = rawKids.length ? buildMenuTree(rawKids, fullPath) : undefined
-    nodes.push({
-      id: String(r.name ?? r.path),
-      title: String(r.meta.title),
-      icon: String(r.meta.icon ?? ''),
-      fullPath,
-      children: childNodes?.length ? childNodes : undefined,
-    })
+function resolveRoutePath(basePath: string, routePath: string) {
+  if (!routePath) {
+    return basePath || '/'
   }
-  return nodes
+
+  if (routePath.startsWith('/')) {
+    return routePath
+  }
+
+  if (basePath === '/' || !basePath) {
+    return `/${routePath}`
+  }
+
+  return `${basePath}/${routePath}`.replace(/\/+/g, '/')
+}
+
+function buildMenuTree(routes: readonly RouteRecordRaw[], basePath = '/'): MenuNode[] {
+  return routes.flatMap((route) => {
+    if (route.meta?.hidden) {
+      return []
+    }
+
+    const fullPath = resolveRoutePath(basePath, String(route.path ?? ''))
+    const childRoutes = (route.children ?? []) as readonly RouteRecordRaw[]
+    const childNodes = childRoutes.length ? buildMenuTree(childRoutes, fullPath) : []
+
+    if (!route.meta?.title) {
+      return childNodes
+    }
+
+    return [
+      {
+        id: String(route.name ?? fullPath),
+        title: String(route.meta.title),
+        icon: String(route.meta.icon ?? ''),
+        fullPath,
+        children: childNodes.length ? childNodes : undefined,
+      },
+    ]
+  })
 }
 
 const menuTree = computed<MenuNode[]>(() => {
-  const layoutRoute = router.options.routes.find(r => r.path === '/')
-  const kids = (layoutRoute as RouteRecordRaw & { children?: RouteRecordRaw[] })?.children ?? []
-  return buildMenuTree(kids)
+  return buildMenuTree(router.options.routes)
 })
 
 const defaultOpeneds = computed(() =>
-  menuTree.value
-    .filter(n => n.children?.some(c => route.path === c.fullPath))
-    .map(n => n.id)
+  menuTree.value.flatMap((node) => {
+    const hasActiveChild = node.children?.some((child) => route.path.startsWith(child.fullPath))
+    return hasActiveChild ? [node.id] : []
+  })
 )
 
 function onSelect(index: string) {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useTheme, THEMES, setCustomPrimary } from '../../stores/theme'
+import { useTheme, THEMES, setCustomPrimary } from '@/stores/theme'
 
 const { state, currentPreset, setMode } = useTheme()
 

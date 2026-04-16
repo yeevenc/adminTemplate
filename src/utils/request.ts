@@ -7,8 +7,8 @@ import axios, {
   AxiosError,
 } from 'axios'
 import { ElMessage } from 'element-plus'
-import { getToken, removeToken } from './auth'
-import router from '../router'
+import { getToken, removeToken } from '@/utils/auth'
+import router from '@/router'
 
 let isRedirectingToLogin = false
 
