@@ -8,15 +8,18 @@ export const useSleepUserStore = defineStore(
   'sleepUser',
   () => {
     const token = ref(getToken() || '')
-
+    const userInfo=ref<{ name: string }>({ name: '' })
     const isLoggedIn = computed(() => !!token.value)
 
     async function loginAction(params: LoginParams): Promise<LoginResult> {
       const response = await login(params)
       setToken(response.data.token)
+      setUserInfo(response.data.name)
       return response.data
     }
-
+    const setUserInfo=(name:string)=>{
+      userInfo.value={name}
+    }
     function setToken(value: string) {
       token.value = value
     }
@@ -40,13 +43,15 @@ export const useSleepUserStore = defineStore(
       setToken,
       clearToken,
       logout,
+      userInfo,
+      setUserInfo
     }
   },
   {
     persist: {
       key: SLEEP_USER_STORE_STORAGE_KEY,
       storage: localStorage,
-      pick: ['token'],
+      pick: ['token','userInfo'] // 只持久化 token 和 userInfo,
     },
   },
 )

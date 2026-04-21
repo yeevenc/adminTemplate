@@ -15,7 +15,6 @@ export const VERSION_CHANNEL_OPTIONS: VersionChannelOption[] = [
   { label: 'iOS', value: 'ios' },
   { label: '华为', value: 'huawei' },
   { label: '安卓其他', value: 'other' },
-  { label: '全渠道', value: 'all' },
 ]
 
 export const VERSION_CHANNEL_FILTER_OPTIONS: VersionChannelFilterOption[] = [

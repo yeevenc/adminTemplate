@@ -55,52 +55,126 @@ function computeGradient(hex: string, dark: boolean): string {
   const rgba = (a: number) => `rgba(${r},${g},${b},${a})`
 
   if (dark) {
-    // Deep, color-tinted dark background with two radial glow orbs
-    const s0 = toHexStr(r * 0.08, g * 0.07, b * 0.14)
-    const s1 = toHexStr(r * 0.15, g * 0.12, b * 0.24)
-    const s2 = toHexStr(r * 0.10, g * 0.09, b * 0.18)
+    // 更深的夜空底色，叠加主色星云，整体更接近星空环境
+    const s0 = toHexStr(r * 0.04, g * 0.05, b * 0.10)
+    const s1 = toHexStr(r * 0.09, g * 0.10, b * 0.19)
+    const s2 = toHexStr(r * 0.05, g * 0.06, b * 0.12)
+    const s3 = '#050814'
     return [
-      `radial-gradient(ellipse 72% 65% at 88% 8%,  ${rgba(0.28)} 0%, transparent 58%)`,
-      `radial-gradient(ellipse 58% 72% at 6%  94%, ${rgba(0.20)} 0%, transparent 55%)`,
-      `radial-gradient(ellipse 42% 48% at 50% 52%, ${rgba(0.10)} 0%, transparent 52%)`,
-      `linear-gradient(145deg, ${s0} 0%, ${s1} 48%, ${s2} 100%)`,
+      `radial-gradient(ellipse 78% 70% at 88% 10%, ${rgba(0.24)} 0%, transparent 58%)`,
+      `radial-gradient(ellipse 62% 78% at 8% 92%, ${rgba(0.18)} 0%, transparent 56%)`,
+      `radial-gradient(ellipse 44% 50% at 52% 48%, ${rgba(0.10)} 0%, transparent 52%)`,
+      `linear-gradient(180deg, ${s3} 0%, ${s0} 18%, ${s1} 58%, ${s2} 100%)`,
     ].join(', ')
   }
 
-  // Light pastel background with very soft orbs
-  const s0 = mixWithWhite(hex, 0.87)
-  const s1 = mixWithWhite(hex, 0.93)
-  const s2 = mixWithWhite(hex, 0.89)
+  // Light: 中心柔白，四周由主题色做云朵状渐变环绕
+  // 构图：对角线主色云 + 次对角线辅色云 + 上下小云气，让整体更自然、不对称但保持平衡
+  const centerTint = mixWithWhite(hex, 0.97)
+  const midTint = mixWithWhite(hex, 0.92)
+  const edgeTint = mixWithWhite(hex, 0.82)
   return [
-    `radial-gradient(ellipse 72% 65% at 88% 8%,  ${rgba(0.09)} 0%, transparent 58%)`,
-    `radial-gradient(ellipse 58% 72% at 6%  94%, ${rgba(0.07)} 0%, transparent 55%)`,
-    `linear-gradient(145deg, ${s0} 0%, ${s1} 48%, ${s2} 100%)`,
+    // 主云：左上 + 右下（构图主轴）
+    `radial-gradient(ellipse 58% 46% at 10% 14%, ${rgba(0.22)} 0%, transparent 75%)`,
+    `radial-gradient(ellipse 58% 46% at 90% 86%, ${rgba(0.22)} 0%, transparent 75%)`,
+    // 辅云：右上 + 左下（平衡构图）
+    `radial-gradient(ellipse 40% 34% at 94% 18%, ${rgba(0.14)} 0%, transparent 78%)`,
+    `radial-gradient(ellipse 40% 34% at 6% 82%, ${rgba(0.14)} 0%, transparent 78%)`,
+    // 顶/底边云气：拉长边缘柔和过渡
+    `radial-gradient(ellipse 42% 18% at 50% -4%, ${rgba(0.10)} 0%, transparent 82%)`,
+    `radial-gradient(ellipse 42% 18% at 50% 104%, ${rgba(0.10)} 0%, transparent 82%)`,
+    // 底色：中心略偏上（48%）带"天空感"，三段径向渐变平滑过渡
+    `radial-gradient(ellipse 140% 130% at 50% 48%, ${centerTint} 0%, ${midTint} 55%, ${edgeTint} 100%)`,
   ].join(', ')
 }
 
 // ─── localStorage ─────────────────────────────────────────────────────────────
 
-function loadStored(): { mode: 'dark' | 'light'; primaryColor: string } | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : null
-  } catch { return null }
+export type ThemeMode = 'dark' | 'light'
+export type ThemePreference = ThemeMode | 'system'
+
+interface StoredTheme {
+  preference: ThemePreference
+  primaryColor: string
 }
 
-function saveStored(mode: 'dark' | 'light', primaryColor: string) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ mode, primaryColor })) } catch { /* noop */ }
+function isPreference(value: unknown): value is ThemePreference {
+  return value === 'system' || value === 'dark' || value === 'light'
+}
+
+function loadStored(): StoredTheme | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as Partial<StoredTheme> & { mode?: unknown }
+    // 兼容旧版本只写 mode 字段的记录
+    const pref: unknown = parsed.preference ?? parsed.mode
+    if (!isPreference(pref)) return null
+    return {
+      preference: pref,
+      primaryColor: typeof parsed.primaryColor === 'string' ? parsed.primaryColor : THEMES[0].color,
+    }
+  } catch {
+    return null
+  }
+}
+
+function saveStored(preference: ThemePreference, primaryColor: string) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ preference, primaryColor }))
+  } catch {
+    /* noop */
+  }
+}
+
+// ─── System preference watcher ────────────────────────────────────────────────
+
+function systemPrefersDark(): boolean {
+  return typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-color-scheme: dark)').matches
+}
+
+function resolveMode(pref: ThemePreference): ThemeMode {
+  if (pref === 'system') return systemPrefersDark() ? 'dark' : 'light'
+  return pref
+}
+
+let mediaQuery: MediaQueryList | null = null
+let mediaHandler: ((e: MediaQueryListEvent) => void) | null = null
+
+function bindSystemWatcher() {
+  if (mediaQuery || typeof window === 'undefined' || !window.matchMedia) return
+  mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  mediaHandler = (e) => {
+    if (state.preference !== 'system') return
+    const next: ThemeMode = e.matches ? 'dark' : 'light'
+    if (state.mode !== next) {
+      state.mode = next
+      applyTheme()
+    }
+  }
+  mediaQuery.addEventListener('change', mediaHandler)
+}
+
+function unbindSystemWatcher() {
+  if (mediaQuery && mediaHandler) mediaQuery.removeEventListener('change', mediaHandler)
+  mediaQuery = null
+  mediaHandler = null
 }
 
 // ─── Reactive state ────────────────────────────────────────────────────────────
 
 const stored = loadStored()
+const initialPreference: ThemePreference = stored?.preference ?? 'dark'
 
 const state = reactive({
-  mode: (stored?.mode ?? 'dark') as 'dark' | 'light',
+  preference: initialPreference,
+  mode: resolveMode(initialPreference) as ThemeMode,
   primaryColor: stored?.primaryColor ?? THEMES[0].color,
   collapsed: false,
   menuTitle: '数据概览',
 })
+
+if (state.preference === 'system') bindSystemWatcher()
 
 // ─── applyTheme ────────────────────────────────────────────────────────────────
 
@@ -134,6 +208,13 @@ export function applyTheme() {
     root.style.setProperty('--text-secondary', '#94A3B8')
     root.style.setProperty('--text-muted',     '#64748B')
     root.style.setProperty('--divider', 'rgba(255,255,255,0.08)')
+    // 星空层：暗色模式下增强星点、星雾和冷色夜空氛围
+    root.style.setProperty('--star-color',        'rgba(255,255,255,0.92)')
+    root.style.setProperty('--star-soft-color',   'rgba(186, 210, 255, 0.55)')
+    root.style.setProperty('--star-opacity-main', '0.85')
+    root.style.setProperty('--star-opacity-soft', '0.50')
+    root.style.setProperty('--aurora-opacity',    '0.30')
+    root.style.setProperty('--night-haze',        hexToRgba(hex, 0.18))
     // Clouds: white wisps visible on dark; nebulae brighter
     root.style.setProperty('--cloud-nebula-op',   '0.24')
     root.style.setProperty('--cloud-wisp-color',  'rgba(255,255,255,0.08)')
@@ -144,11 +225,17 @@ export function applyTheme() {
     root.style.setProperty('--glass-border', 'rgba(255,255,255,0.80)')
     root.style.setProperty('--glass-hover',  'rgba(255,255,255,0.78)')
     root.style.setProperty('--glass-active', 'rgba(255,255,255,0.88)')
-    root.style.setProperty('--glass-card',   'rgba(255,255,255,0.55)')
+    root.style.setProperty('--glass-card',   'rgba(255,255,255,0.25)')
     root.style.setProperty('--text-primary',   '#1E1B4B')
     root.style.setProperty('--text-secondary', '#4C4B7A')
     root.style.setProperty('--text-muted',     '#6B7280')
     root.style.setProperty('--divider', 'rgba(0,0,0,0.07)')
+    root.style.setProperty('--star-color',        'rgba(255,255,255,0)')
+    root.style.setProperty('--star-soft-color',   'rgba(255,255,255,0)')
+    root.style.setProperty('--star-opacity-main', '0')
+    root.style.setProperty('--star-opacity-soft', '0')
+    root.style.setProperty('--aurora-opacity',    '0')
+    root.style.setProperty('--night-haze',        'rgba(255,255,255,0)')
     // Clouds: color-tinted wisps on light; nebulae softer
     root.style.setProperty('--cloud-nebula-op',   '0.13')
     root.style.setProperty('--cloud-wisp-color',  hexToRgba(hex, 0.07))
@@ -156,7 +243,7 @@ export function applyTheme() {
     root.classList.remove('dark')
   }
 
-  saveStored(state.mode, state.primaryColor)
+  saveStored(state.preference, state.primaryColor)
 }
 
 // ─── Public API ────────────────────────────────────────────────────────────────
@@ -173,9 +260,20 @@ export function useTheme() {
     glow:  hexToRgba(state.primaryColor, 0.35),
   }))
 
-  function setMode(mode: 'dark' | 'light') {
-    state.mode = mode
+  // 保留显式 dark/light 入口，同时新增跟随系统的偏好入口
+  function setPreference(pref: ThemePreference) {
+    state.preference = pref
+    state.mode = resolveMode(pref)
+    if (pref === 'system') {
+      bindSystemWatcher()
+    } else {
+      unbindSystemWatcher()
+    }
     applyTheme()
+  }
+
+  function setMode(mode: ThemeMode) {
+    setPreference(mode)
   }
 
   function setTheme(id: string) {
@@ -187,5 +285,5 @@ export function useTheme() {
 
   function setMenuTitle(title: string) { state.menuTitle = title }
 
-  return { state, currentPreset, THEMES, setMode, setTheme, toggleCollapse, setMenuTitle }
+  return { state, currentPreset, THEMES, setMode, setPreference, setTheme, toggleCollapse, setMenuTitle }
 }

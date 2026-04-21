@@ -5,6 +5,7 @@ import { resolve } from 'path'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
+  const ignoredDirs = ['**/.superpowers/**', '**/.github/**', '**/.claude/**', '**/docs/**']
 
   return {
     plugins: [vue()],
@@ -14,6 +15,10 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      watch: {
+        // 非业务目录不参与本地监听，减少无关文件触发
+        ignored: ignoredDirs,
+      },
       proxy: env.VITE_PROXY_TARGET
         ? {
             '/api': {

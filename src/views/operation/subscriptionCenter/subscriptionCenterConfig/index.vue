@@ -1,15 +1,14 @@
 <script setup lang="ts" name="subscriptionCenterConfig">
 defineOptions({ name: 'subscriptionCenterConfig' })
 
-import { CopyDocument, Edit, Plus, Search } from '@element-plus/icons-vue'
+import { CopyDocument, Edit, Plus, Search,Refresh } from '@element-plus/icons-vue'
 import { onMounted, reactive, ref } from 'vue'
 import type { ApiResponseData } from '@/utils/request'
 import { getSubscriptionCenterList } from '@/api/operation'
 import {
   USER_GROUP_AGE_OPTIONS,
-  USER_GROUP_AGE_ALL_VALUE,
   CHANNEL_OPTIONS,
-  getAgeLabel,
+  getLabelText,
 } from '@/utils/useConfig'
 import SubscriptionConfigDialog from './components/SubscriptionConfigDialog.vue'
 import RetainConfigDrawer from './components/RetainConfigDrawer.vue'
@@ -51,21 +50,16 @@ const ENV_OPTIONS: Array<{ label: string; value: ResourceEnv }> = [
 ]
 
 const STATUS_OPTIONS = [
-  { label: '全部', value: '' },
   { label: '上线', value: 1 },
   { label: '下线', value: 0 },
 ]
 
 const POSITION_OPTIONS = [
-  { label: '全部', value: '' },
   { label: '普通会员', value: 1 },
   { label: '超级会员', value: 2 },
 ]
 
-const AGE_FILTER_OPTIONS = [
-  { label: '全部', value: USER_GROUP_AGE_ALL_VALUE },
-  ...USER_GROUP_AGE_OPTIONS,
-]
+const AGE_FILTER_OPTIONS = USER_GROUP_AGE_OPTIONS
 
 const CHANNEL_FILTER_OPTIONS = CHANNEL_OPTIONS
 
@@ -258,8 +252,7 @@ onMounted(() => {
 
     <el-card shadow="never" class="glass-card m-t-10">
       <el-button :icon="Plus" plain type="primary" @click="handleAdd">添加</el-button>
-      <el-button type="info" plain @click="retainDrawerRef?.open()">挽留配置</el-button>
-
+      <el-button type="success" :icon="Refresh" plain @click="retainDrawerRef?.open()">挽留配置</el-button>
       <el-table
         v-loading="loading"
         stripe
@@ -274,7 +267,7 @@ onMounted(() => {
           <template #default="{ row }">
             <el-space wrap size="small">
               <el-tag v-for="channel in row.channel" :key="channel" type="success">
-                {{ channel }}
+                {{ getLabelText(channel, CHANNEL_OPTIONS) }}
               </el-tag>
             </el-space>
           </template>
@@ -295,7 +288,7 @@ onMounted(() => {
           <template #default="{ row }">
              <el-space wrap size="small">
               <el-tag v-for="age in row.age" :key="age" type="warning">
-                {{ getAgeLabel(age) }}
+                {{ getLabelText(age, USER_GROUP_AGE_OPTIONS) }}
               </el-tag>
             </el-space>
           </template>

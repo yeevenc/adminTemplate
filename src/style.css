@@ -6,6 +6,12 @@
   --gradient-bg: linear-gradient(145deg, #0b0620 0%, #130b36 48%, #0e082a 100%);
   --cloud-nebula-op: 0.24;
   --cloud-wisp-color: rgba(255, 255, 255, 0.08);
+  --star-color: rgba(255, 255, 255, 0.92);
+  --star-soft-color: rgba(186, 210, 255, 0.55);
+  --star-opacity-main: 0.85;
+  --star-opacity-soft: 0.50;
+  --aurora-opacity: 0.30;
+  --night-haze: rgba(139, 92, 246, 0.18);
   --color-primary: #8B5CF6;
   --color-primary-light: #A78BFA;
   --color-glow: rgba(139, 92, 246, 0.35);
@@ -141,4 +147,3 @@ a { color: inherit; text-decoration: none; }
     transition-duration: 0.01ms !important;
   }
 }
-

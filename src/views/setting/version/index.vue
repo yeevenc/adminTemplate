@@ -6,56 +6,22 @@ import { ElMessage } from 'element-plus'
 import type { ApiResponseData } from '@/utils/request'
 import VersionUpgradeEditDialog from '@/views/setting/version/components/VersionUpgradeEditDialog.vue'
 import VersionMarketDialog from '@/views/setting/version/components/VersionMarketDialog.vue'
-import { VERSION_CHANNEL_FILTER_OPTIONS } from '@/constants/version'
+import { CHANNEL_OPTIONS } from '@/utils/useConfig'
+import type {
+  FilterFormItem,
+  VersionUpgradeQueryForm,
+  VersionUpgradeItem,
+  VersionUpgradeLatestConfig,
+  VersionUpgradeListResponse,
+  VersionUpgradePayload,
+  VersionUpgradeStatus,
+} from '@/views/setting/version/types'
 import {
   addVersionConfig,
   editVersionConfig,
   getVersionList,
   saveVersionMarketConfig,
-} from '@/api/setting/version'
-import type {
-  VersionUpgradeChannel,
-  VersionUpgradeItem,
-  VersionUpgradeLatestConfig,
-  VersionUpgradePayload,
-  VersionUpgradeStatus,
-  VersionUpgradeType,
-} from '@/views/setting/version/types'
-
-type FilterFieldType = 'input' | 'select'
-
-interface FilterFormItem {
-  label: string
-  field: keyof VersionUpgradeQueryForm
-  type: FilterFieldType
-  placeholder: string
-  options?: Array<{ label: string; value: string }>
-}
-
-interface VersionUpgradeQueryForm {
-  appVersion: string
-  channel: string
-  status: string
-  isDefaultConfig: string
-}
-
-interface VersionUpgradeListItemResponse {
-  id: number
-  channel: VersionUpgradeChannel
-  app_version: string
-  min_version: string
-  upgrade_type: VersionUpgradeType
-  upgrade_title: string
-  upgrade_tip: string
-  status: VersionUpgradeStatus
-  is_default_config: 1 | 2
-  updated_at?: string
-}
-
-interface VersionUpgradeListResponse {
-  list: VersionUpgradeListItemResponse[] | ''
-  count: number
-}
+} from '@/api/setting'
 
 const statusOptions = [
   { label: '全部状态', value: '' },
@@ -83,7 +49,7 @@ const filterFormItems: FilterFormItem[] = [
     field: 'channel',
     type: 'select',
     placeholder: '请选择渠道',
-    options: VERSION_CHANNEL_FILTER_OPTIONS,
+    options: CHANNEL_OPTIONS,
   },
   {
     label: '状态',
@@ -138,34 +104,8 @@ const upgradeTypeTextMap: Record<number, string> = {
   4: '不提示升级',
 }
 
-const channelTextMap: Record<VersionUpgradeChannel, string> = {
-  ios: 'iOS',
-  huawei: '华为',
-  other: '安卓其他',
-  all: 'iOS / 华为 / 安卓其他',
-}
-
-function getChannelText(channel: VersionUpgradeChannel) {
-  return channelTextMap[channel]
-}
-
 function getStatusText(status: VersionUpgradeStatus) {
   return statusTextMap[status]
-}
-
-function mapVersionUpgradeItem(item: VersionUpgradeListItemResponse): VersionUpgradeItem {
-  return {
-    id: item.id,
-    channel: item.channel,
-    appVersion: item.app_version,
-    minVersion: item.min_version,
-    upgradeType: item.upgrade_type,
-    upgradeTitle: item.upgrade_title,
-    upgradeTip: item.upgrade_tip,
-    status: item.status,
-    isDefaultConfig: item.is_default_config,
-    updatedAt: item.updated_at || '',
-  }
 }
 
 function getListParams() {
@@ -186,7 +126,7 @@ async function fetchTableData() {
     const response = await getVersionList(getListParams()) as ApiResponseData<VersionUpgradeListResponse>
     const list = Array.isArray(response.data.list) ? response.data.list : []
 
-    tableData.value = list.map((item) => mapVersionUpgradeItem(item))
+    tableData.value = list
     pagination.total = response.data.count
   } finally {
     loading.value = false
@@ -267,24 +207,12 @@ onMounted(() => {
 
 <template>
   <div class="version-upgrade-page">
-    <div class="page-header glass-card">
-      <div>
-        <h2 class="page-title">版本升级配置</h2>
-        <p class="page-subtitle">管理客户端升级弹窗、最低兼容版本和渠道市场版本号配置。</p>
-      </div>
-      <div class="header-actions">
-        <el-button plain @click="handleOpenMarketDialog">最新版本号配置</el-button>
-        <el-button type="primary" @click="handleAdd">新增升级配置</el-button>
-      </div>
-    </div>
-
     <el-card shadow="never" class="glass-card filter-card">
-      <el-form :model="queryForm" inline class="filter-form">
+      <el-form :model="queryForm" inline>
         <el-form-item
           v-for="item in filterFormItems"
           :key="item.field"
           :label="item.label"
-          class="filter-form__item"
         >
           <el-input
             v-if="item.type === 'input'"
@@ -313,20 +241,19 @@ onMounted(() => {
           </el-select>
         </el-form-item>
 
-        <el-form-item class="filter-form__actions">
+        <el-form-item>
           <el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
     <div class="content-grid">
-      <el-card shadow="never" class="glass-card table-card">
-        <el-table v-loading="loading" stripe border :data="tableData">
+      <el-card shadow="never" class="glass-card">
+          <el-button plain @click="handleOpenMarketDialog">最新版本号配置</el-button>
+          <el-button type="primary" @click="handleAdd">新增升级配置</el-button>
+        <el-table v-loading="loading" stripe border :data="tableData" class="m-t-10" style="height: calc(100vh - 300px);">
           <el-table-column prop="id" label="ID" fixed width="70" />
-          <el-table-column label="渠道" min-width="140">
-            <template #default="{ row }">
-              {{ getChannelText(row.channel as VersionUpgradeChannel) }}
-            </template>
+          <el-table-column prop="channel" label="渠道" min-width="140">
           </el-table-column>
           <el-table-column prop="appVersion" label="版本号" min-width="120" />
           <el-table-column prop="minVersion" label="最低兼容版本号" min-width="140" />
@@ -393,47 +320,4 @@ onMounted(() => {
   gap: 20px;
 }
 
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 24px 28px;
-}
-
-.page-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  margin-bottom: 12px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-primary) 16%, transparent);
-  color: var(--color-primary);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.page-title {
-  margin: 0 0 8px;
-  color: var(--text-primary);
-  font-size: 26px;
-  font-weight: 700;
-}
-
-.page-subtitle {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 14px;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.table-pagination {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 20px;
-}
 </style>

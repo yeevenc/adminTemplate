@@ -12,8 +12,8 @@ export interface TabItem {
 }
 
 const DASHBOARD_TAB: TabItem = {
-  name: 'dashboard',
-  title: '数据概览',
+  name: 'home',
+  title: '首页',
   path: '/',
   closable: false,
 }
@@ -55,10 +55,25 @@ export function useTabs() {
     }
   }
 
+  function closeOtherTabs(name: string): void {
+    tabs.value = tabs.value.filter(t => !t.closable || t.name === name)
+    if (!tabs.value.find(t => t.name === activeTabName.value)) {
+      const target = tabs.value.find(t => t.name === name) ?? tabs.value[0]
+      activeTabName.value = target.name
+      router.push(target.path)
+    }
+  }
+
+  function closeAllTabs(): void {
+    tabs.value = tabs.value.filter(t => !t.closable)
+    activeTabName.value = DASHBOARD_TAB.name
+    router.push(DASHBOARD_TAB.path)
+  }
+
   // Called by TagBar on click for immediate visual feedback before route watcher fires
   function setActive(name: string): void {
     activeTabName.value = name
   }
 
-  return { tabs, activeTabName, cachedViews, addTab, removeTab, setActive }
+  return { tabs, activeTabName, cachedViews, addTab, removeTab, closeOtherTabs, closeAllTabs, setActive }
 }

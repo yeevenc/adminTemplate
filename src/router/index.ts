@@ -1,6 +1,12 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { getToken } from '@/utils/auth'
 import { settingRoutes } from '@/router/setting'
+import { activityRoutes } from '@/router/activity'
+import { userConfigRoutes } from '@/router/userConfig'
+import { contentRoutes } from '@/router/content'
+import { statisticsRoutes } from '@/router/statistics'
+import { orderConfigRoutes } from '@/router/orderConfig'
+import {operationRoutes} from '@/router/operation'
 declare module 'vue-router' {
   interface RouteMeta {
     title?: string
@@ -16,9 +22,9 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: 'dashboard',
+        name: 'home',
         component: () => import('@/views/home/index.vue'),
-        meta: { title: '数据概览', icon: 'dashboard' },
+        meta: { title: '首页', icon: 'HomeFilled' },
       },
     ],
   },
@@ -45,6 +51,19 @@ const routes: RouteRecordRaw[] = [
     path: '/:pathMatch(.*)*',
     redirect: '/404',
   },
+  // 运营配置
+  ...operationRoutes,
+  // 内容管理
+  ...contentRoutes,
+  //活动管理
+  ...activityRoutes,
+  // 订单管理
+  ...orderConfigRoutes,
+    // 统计管理
+  ...statisticsRoutes,
+  // 用户配置
+  ...userConfigRoutes,
+  // 通用设置
   ...settingRoutes
 ]
 

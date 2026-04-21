@@ -6,20 +6,24 @@ import axios, {
   type InternalAxiosRequestConfig,
   AxiosError,
 } from 'axios'
-import { ElMessage } from 'element-plus'
+import { ElLoading, ElMessage, type LoadingInstance } from 'element-plus'
 import { getToken, removeToken } from '@/utils/auth'
 import router from '@/router'
 
 let isRedirectingToLogin = false
+let loadingCount = 0
+let loadingInstance: LoadingInstance | null = null
 
-export interface ApiResponseData<T = unknown> {
+export interface ApiResponseData<T = any> {
   code: number
-  data: T
-  message: string
+    message?: string
+    msg?: string
+    data: T
 }
 
 export interface RequestConfig<T = unknown> extends AxiosRequestConfig<T> {
   showError?: boolean
+  showLoading?: boolean
   withToken?: boolean
 }
 
@@ -30,6 +34,7 @@ export interface BlobRequestConfig<T = unknown> extends RequestConfig<T> {
 const DEFAULT_ERROR_MESSAGE = '服务异常，请稍后重试'
 const SUCCESS_CODE_LIST = [0, 200]
 const UNAUTHORIZED_CODE = 401
+const EXPIRED_LOGIN_CODE = 501
 
 function showErrorMessage(message?: string) {
   ElMessage.error(message || DEFAULT_ERROR_MESSAGE)
@@ -43,15 +48,46 @@ function shouldShowError(config?: RequestConfig) {
   return config?.showError !== false
 }
 
+function shouldShowLoading(config?: RequestConfig) {
+  return config?.showLoading !== false
+}
+
+function openGlobalLoading() {
+  if (!loadingInstance) {
+    loadingInstance = ElLoading.service({
+      lock: true,
+      text: '加载中...',
+      background: 'rgba(0, 0, 0, 0.45)',
+    })
+  }
+
+  loadingCount += 1
+}
+
+function closeGlobalLoading() {
+  if (loadingCount > 0) {
+    loadingCount -= 1
+  }
+
+  if (loadingCount === 0 && loadingInstance) {
+    loadingInstance.close()
+    loadingInstance = null
+  }
+}
+
 function createRequestService(): AxiosInstance {
   const service = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
-    timeout: 10000,
+    timeout: 50000,
   })
 
   service.interceptors.request.use(
     (config) => {
       const requestConfig = config as InternalAxiosRequestConfig & RequestConfig
+
+      if (shouldShowLoading(requestConfig)) {
+        openGlobalLoading()
+      }
 
       if (requestConfig.withToken === false) {
         return config
@@ -69,12 +105,24 @@ function createRequestService(): AxiosInstance {
 
       return config
     },
-    (error: AxiosError) => Promise.reject(error),
+    (error: AxiosError) => {
+      const requestConfig = error.config as RequestConfig | undefined
+
+      if (shouldShowLoading(requestConfig)) {
+        closeGlobalLoading()
+      }
+
+      return Promise.reject(error)
+    },
   )
 
   service.interceptors.response.use(
     (response: AxiosResponse<ApiResponseData>) => {
       const requestConfig = response.config as RequestConfig
+
+      if (shouldShowLoading(requestConfig)) {
+        closeGlobalLoading()
+      }
 
       if (response.config.responseType === 'blob') {
         return response
@@ -86,7 +134,7 @@ function createRequestService(): AxiosInstance {
         return response
       }
 
-      if (responseData.code === UNAUTHORIZED_CODE) {
+      if (responseData.code === UNAUTHORIZED_CODE || responseData.code === EXPIRED_LOGIN_CODE) {
         removeToken()
         if (!isRedirectingToLogin && router.currentRoute.value.path !== '/login') {
           isRedirectingToLogin = true
@@ -104,33 +152,37 @@ function createRequestService(): AxiosInstance {
       return Promise.reject(responseData)
     },
     (error: AxiosError<ApiResponseData>) => {
-    const requestConfig = error.config as RequestConfig | undefined
-    const status = error.response?.status
-    const message = error.response?.data?.message || error.message || DEFAULT_ERROR_MESSAGE
+      const requestConfig = error.config as RequestConfig | undefined
+      const status = error.response?.status
+      const message = error.response?.data?.message || error.message || DEFAULT_ERROR_MESSAGE
 
-    if (status === 401) {
-      removeToken()
-      if (!isRedirectingToLogin && router.currentRoute.value.path !== '/login') {
-        isRedirectingToLogin = true
-        router.push('/login').finally(() => {
-          isRedirectingToLogin = false
-        })
+      if (shouldShowLoading(requestConfig)) {
+        closeGlobalLoading()
+      }
+
+      if (status === 401) {
+        removeToken()
+        if (!isRedirectingToLogin && router.currentRoute.value.path !== '/login') {
+          isRedirectingToLogin = true
+          router.push('/login').finally(() => {
+            isRedirectingToLogin = false
+          })
+          return Promise.reject(error)
+        }
+        // On login page (or redirect already in progress): fall through so showErrorMessage runs below
+      }
+
+      if (status === 500) {
+        router.push('/500')
         return Promise.reject(error)
       }
-      // On login page (or redirect already in progress): fall through so showErrorMessage runs below
-    }
 
-    if (status === 500) {
-      router.push('/500')
+      if (shouldShowError(requestConfig)) {
+        showErrorMessage(message)
+      }
+
       return Promise.reject(error)
-    }
-
-    if (shouldShowError(requestConfig)) {
-      showErrorMessage(message)
-    }
-
-    return Promise.reject(error)
-  },
+    },
   )
 
   return service
@@ -154,7 +206,7 @@ export function request<T = unknown>(config: RequestConfig): Promise<ApiResponse
     .then((response) => response.data)
 }
 
-export function get<T = unknown>(url: string, config?: RequestConfig) {
+export function get<T = any>(url: string, config?: RequestConfig) {
   return request<T>({
     ...config,
     url,
@@ -162,7 +214,7 @@ export function get<T = unknown>(url: string, config?: RequestConfig) {
   })
 }
 
-export function post<T = unknown, D = unknown>(url: string, data?: D, config?: RequestConfig<D>) {
+export function post<T = any, D = unknown>(url: string, data?: D, config?: RequestConfig<D>) {
   return request<T>({
     ...config,
     url,
@@ -171,7 +223,7 @@ export function post<T = unknown, D = unknown>(url: string, data?: D, config?: R
   })
 }
 
-export function put<T = unknown, D = unknown>(url: string, data?: D, config?: RequestConfig<D>) {
+export function put<T = any, D = unknown>(url: string, data?: D, config?: RequestConfig<D>) {
   return request<T>({
     ...config,
     url,
@@ -180,7 +232,7 @@ export function put<T = unknown, D = unknown>(url: string, data?: D, config?: Re
   })
 }
 
-export function del<T = unknown>(url: string, config?: RequestConfig) {
+export function del<T = any>(url: string, config?: RequestConfig) {
   return request<T>({
     ...config,
     url,

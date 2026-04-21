@@ -123,7 +123,7 @@ defineExpose({ open })
   <el-drawer
     v-model="drawerVisible"
     title="订阅中心挽留配置"
-    size="900px"
+    size="80%"
     destroy-on-close
   >
     <div class="retain-drawer">
@@ -145,7 +145,7 @@ defineExpose({ open })
               :src="row.image_url"
               :preview-src-list="[row.image_url]"
               preview-teleported
-              style="height: 48px; width: 48px; object-fit: cover"
+              style="height: 48px; width: 48px; object-fit: scale-down;"
             />
             <span v-else>暂无</span>
           </template>
@@ -197,7 +197,7 @@ defineExpose({ open })
         prop="image_url"
         :rules="[{ required: true, message: '请上传挽留图片', trigger: 'change' }]"
       >
-        <uploadImage v-model="form.image_url" :round="false" size="small" />
+        <uploadImage v-model="form.image_url" size="small" />
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-radio-group v-model="form.status">

@@ -196,7 +196,7 @@ export const getSubscriptionCenterList = (params: object) => {
 
 // 获取订阅中心配置详情
 export const getSubscriptionCenterInfo = (id: number | string) => {
-  return get(`copyCenterVipConfig/${id}`)
+  return get(`getCenterVipConfigInfo/${id}`)
 }
 
 // 添加订阅中心配置
@@ -245,12 +245,12 @@ export const editMakeUpSku = (id: number | string, params: object) => {
 
 // 获取挽留配置列表
 export const getRetainConfigList = (params?: object) => {
-  return get('getAdminRetainConfigList', { params })
+  return get('getCancelCenterVipConfigList', { params })
 }
 
 // 获取挽留配置详情
 export const getRetainConfigInfo = (id: number | string) => {
-  return get(`getAdminRetainConfigInfo/${id}`)
+  return get(`getCancelCenterVipConfigInfo/${id}`)
 }
 
 // 添加挽留配置
@@ -289,4 +289,175 @@ export const addSubscriptionAbTest = (params: object) => {
 // 编辑ab实验
 export const editSubscriptionAbTest = (id: number | string, params: object) => {
   return post(`updateCenterVipAbtest/${id}`, params)
+}
+// ab实验vip列表数据
+export const getSubscriptionAbTestVipList = () => {
+  return get(`getAdminCenterVipList`)
+}
+
+// 订阅中心ab实验神策key列表
+export const getSubscriptionAbTestSenceKey = () => {
+  return get('getVipSensorKey')
+}
+
+/***
+ * 
+ * 
+ *  
+ *  ob-模版配置
+ * 
+ * 
+ * 
+ */
+
+// 获取模版列表
+export const getTemplateList = (params?: object) => {
+  return get('getTemplateConfigAdminList', { params })
+}
+
+// 添加ob模版-订阅页
+export const addTemplate = (params: object) => {
+  return post('addTemplateConfig', params)
+}
+
+// 编辑ob模版-订阅页
+export const editTemplate = (id: number | string, params: object) => {
+  return post(`updateTemplateConfig/${id}`, params)
+}
+
+// 获取模版详情
+export const getTemplateInfo = (id: number | string,params?: object) => {
+  return get(`getTemplateConfigInfo/${id}`, { params })
+}
+
+/**
+ * 
+ * 
+ *  ob-挽留配置
+ *  
+ * 
+ */
+
+// 获取挽留配置列表
+export const getObRetainList = (params?: object) => {
+  return get('getCancelConfigAdminList', { params })
+}
+
+// 获取挽留配置详情
+export const getObRetainInfo = (id: number | string) => {
+  return get(`getCancelConfigInfo/${id}`)
+}
+
+// 添加挽留配置
+export const addObRetain = (params: object) => {
+  return post('addCancelConfig', params)
+}
+
+// 编辑挽留配置
+export const editObRetain = (id: number | string, params: object) => {
+  return post(`updateCancelConfig/${id}`, params)
+}
+
+/**
+ * 
+ * 
+ *  ob-订阅页配置
+ * 
+ * 
+ */
+
+// 获取订阅页配置列表
+export const getSubscriptionConfigList = (params?: object) => {
+  return get('getObConfigAdminList', { params })
+}
+
+// 获取订阅页配置详情
+export const getSubscriptionConfigInfo = (id: number | string) => {
+  return get(`getObConfigInfo/${id}`)
+}
+
+// 添加订阅页配置
+export const addSubscriptionConfig = (params: object) => {
+  return post('addObConfig', params)
+}
+
+// 编辑订阅页配置
+export const editSubscriptionConfig = (id: number | string, params: object) => {
+  return post(`updateObConfig/${id}`, params)
+}
+
+
+/**
+ *
+ *
+ *
+ *  ob 策略配置
+ *
+ *
+ *
+ */
+
+// 获取 OB 策略顶层列表（含筛选字段）
+export const getObStrategyList = (params?: object) => {
+  return get('getStrategyList', { params })
+}
+
+// 获取 OB 策略顶层配置详情（表单回显使用）
+export const getObSubConfigInfo = (id: number | string) => {
+  return get(`getObSubConfigInfo/${id}`)
+}
+
+// 添加 OB 策略（顶层配置）
+export const addObStrategyConfig = (params: object) => {
+  return post('addStrategy', params)
+}
+
+// 编辑 OB 策略（顶层配置）
+export const editObStrategyConfig = (id: number | string, params: object) => {
+  return post(`updateStrategy/${id}`, params)
+}
+
+// OB 策略上下架
+export const updateObStrategyStatus = (id: number | string, params: object) => {
+  return post(`updateObSubConfigStatus/${id}`, params)
+}
+
+// 根据多个策略 id 获取策略详情列表
+export const getObStrategyInfoByIds = (params: object) => {
+  return get('getObStrategyConfig', { params })
+}
+
+// 添加单个策略
+export const addObStrategyItem = (params: object) => {
+  return post('addObStrategyConfig', params)
+}
+
+// 编辑单个策略
+export const editObStrategyItem = (id: number | string, params: object) => {
+  return post(`updateObStrategyConfig/${id}`, params)
+}
+
+// 删除单个策略
+export const delObStrategyItem = (id: number | string) => {
+  return post(`delObStrategyConfig/${id}`)
+}
+
+// 订阅页/挽留页 id 模糊搜索（type=1 订阅页，type=2 挽留页）
+export const getObPageIdList = (params: object) => {
+  return get('getObSubConfigId', { params })
+}
+
+// 释放实验（释放实验组/线上组）
+export const releaseObStrategyTest = (params: object) => {
+  return get('releaseTest', { params })
+}
+
+// 预览订阅页配置
+export const previewObSubscription = (id: number | string) => {
+  return get(`getPreviewObConfig/${id}`)
+}
+
+// 预览挽留页配置
+export const previewObRetain = (id: number | string) => {
+  return get(`getPreviewCancelConfig/${id}`)
 }

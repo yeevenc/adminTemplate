@@ -2,73 +2,15 @@
 import { computed } from 'vue'
 import { useRouter, useRoute, type RouteRecordRaw } from 'vue-router'
 import { useTheme } from '@/stores/theme'
-
+import { buildMenuTree } from '@/layout/menu'
+import SidebarMenuNode from '@/layout/components/SidebarMenuNode.vue'
 const { state, toggleCollapse } = useTheme()
 const router = useRouter()
 const route = useRoute()
-
-const ICONS: Record<string, string> = {
-  dashboard: 'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z',
-  moon:      'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z',
-  users:     'M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z',
-  device:    'M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z',
-  book:      'M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z',
-  chart:     'M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z',
-  settings:  'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
-}
-
-interface MenuNode {
-  id: string
-  title: string
-  icon: string
-  fullPath: string
-  children?: MenuNode[]
-}
-
-function resolveRoutePath(basePath: string, routePath: string) {
-  if (!routePath) {
-    return basePath || '/'
-  }
-
-  if (routePath.startsWith('/')) {
-    return routePath
-  }
-
-  if (basePath === '/' || !basePath) {
-    return `/${routePath}`
-  }
-
-  return `${basePath}/${routePath}`.replace(/\/+/g, '/')
-}
-
-function buildMenuTree(routes: readonly RouteRecordRaw[], basePath = '/'): MenuNode[] {
-  return routes.flatMap((route) => {
-    if (route.meta?.hidden) {
-      return []
-    }
-
-    const fullPath = resolveRoutePath(basePath, String(route.path ?? ''))
-    const childRoutes = (route.children ?? []) as readonly RouteRecordRaw[]
-    const childNodes = childRoutes.length ? buildMenuTree(childRoutes, fullPath) : []
-
-    if (!route.meta?.title) {
-      return childNodes
-    }
-
-    return [
-      {
-        id: String(route.name ?? fullPath),
-        title: String(route.meta.title),
-        icon: String(route.meta.icon ?? ''),
-        fullPath,
-        children: childNodes.length ? childNodes : undefined,
-      },
-    ]
-  })
-}
+import type { MenuNode } from '@/layout/menu'
 
 const menuTree = computed<MenuNode[]>(() => {
-  return buildMenuTree(router.options.routes)
+  return buildMenuTree(router.options.routes as readonly RouteRecordRaw[])
 })
 
 const defaultOpeneds = computed(() =>
@@ -109,35 +51,11 @@ function onSelect(index: string) {
       class="sidebar-menu"
       @select="onSelect"
     >
-      <template v-for="node in menuTree" :key="node.id">
-        <el-menu-item v-if="!node.children" :index="node.fullPath">
-          <span class="menu-icon">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-              <path :d="ICONS[node.icon] ?? ''" />
-            </svg>
-          </span>
-          <template #title>{{ node.title }}</template>
-        </el-menu-item>
-
-        <el-sub-menu v-else :index="node.id">
-          <template #title>
-            <span class="menu-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                <path :d="ICONS[node.icon] ?? ''" />
-              </svg>
-            </span>
-            <span>{{ node.title }}</span>
-          </template>
-          <el-menu-item
-            v-for="child in node.children"
-            :key="child.id"
-            :index="child.fullPath"
-          >
-            <span class="child-dot" />
-            <template #title>{{ child.title }}</template>
-          </el-menu-item>
-        </el-sub-menu>
-      </template>
+      <SidebarMenuNode
+        v-for="node in menuTree"
+        :key="node.id"
+        :node="node"
+      />
     </el-menu>
 
     <!-- Collapse toggle -->
@@ -259,16 +177,6 @@ function onSelect(index: string) {
 
 .sidebar-menu :deep(.el-sub-menu .el-menu) {
   background-color: transparent !important;
-}
-
-.child-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.6;
-  flex-shrink: 0;
-  margin-right: 8px;
 }
 
 .menu-icon {

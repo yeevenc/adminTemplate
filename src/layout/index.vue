@@ -18,8 +18,13 @@ watch(route, (newRoute) => {
 
 <template>
   <div class="admin-layout">
-    <!-- Cloud gradient background -->
+    <!-- 星空背景层 -->
     <div class="bg-scene" aria-hidden="true">
+      <div class="stars stars-1" />
+      <div class="stars stars-2" />
+      <div class="stars stars-3" />
+      <div class="aurora aurora-1" />
+      <div class="aurora aurora-2" />
       <!-- Primary-color nebula clouds -->
       <div class="cloud cp1" />
       <div class="cloud cp2" />
@@ -78,6 +83,70 @@ watch(route, (newRoute) => {
   z-index: 0;
 }
 
+.stars,
+.aurora {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.6s ease, background 0.6s ease;
+}
+
+.stars {
+  background-repeat: repeat;
+  animation: twinkle-drift linear infinite;
+}
+
+.stars-1 {
+  opacity: var(--star-opacity-main, 0.85);
+  background-image:
+    radial-gradient(circle at 12% 20%, var(--star-color) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 34% 72%, var(--star-soft-color) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 58% 28%, var(--star-color) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 80% 18%, var(--star-soft-color) 0 1.3px, transparent 1.9px),
+    radial-gradient(circle at 88% 66%, var(--star-color) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 22% 88%, var(--star-soft-color) 0 1.2px, transparent 1.8px);
+  background-size: 360px 360px;
+  animation-duration: 26s;
+}
+
+.stars-2 {
+  opacity: var(--star-opacity-soft, 0.5);
+  background-image:
+    radial-gradient(circle at 18% 14%, var(--star-soft-color) 0 0.9px, transparent 1.5px),
+    radial-gradient(circle at 42% 52%, var(--star-color) 0 0.8px, transparent 1.4px),
+    radial-gradient(circle at 64% 82%, var(--star-soft-color) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 76% 34%, var(--star-color) 0 0.8px, transparent 1.4px),
+    radial-gradient(circle at 8% 64%, var(--star-soft-color) 0 1px, transparent 1.6px);
+  background-size: 520px 520px;
+  animation-duration: 34s;
+  animation-direction: reverse;
+}
+
+.stars-3 {
+  opacity: calc(var(--star-opacity-soft, 0.5) * 0.7);
+  background-image:
+    radial-gradient(circle at 24% 24%, var(--star-color) 0 0.7px, transparent 1.3px),
+    radial-gradient(circle at 48% 18%, var(--star-soft-color) 0 0.9px, transparent 1.5px),
+    radial-gradient(circle at 68% 58%, var(--star-color) 0 0.7px, transparent 1.3px),
+    radial-gradient(circle at 90% 40%, var(--star-soft-color) 0 0.9px, transparent 1.5px);
+  background-size: 680px 680px;
+  animation-duration: 42s;
+}
+
+.aurora {
+  opacity: var(--aurora-opacity, 0.3);
+  filter: blur(80px);
+}
+
+.aurora-1 {
+  background:
+    radial-gradient(ellipse 34% 20% at 18% 14%, var(--night-haze) 0%, transparent 72%);
+}
+
+.aurora-2 {
+  background:
+    radial-gradient(ellipse 26% 18% at 82% 22%, color-mix(in srgb, var(--night-haze) 70%, rgba(143, 211, 255, 0.14)) 0%, transparent 74%);
+}
+
 /* ── Cloud gradient background ── */
 .cloud {
   position: absolute;
@@ -115,8 +184,8 @@ watch(route, (newRoute) => {
 .cp3 {
   width: 560px;
   height: 170px;
-  top: 48%;
-  left: 32%;
+  top: -60px;
+  right: 24%;
   background: radial-gradient(ellipse at 50% 60%, var(--color-primary) 0%, transparent 72%);
   opacity: var(--cloud-nebula-op, 0.24);
   filter: blur(80px);
@@ -165,7 +234,7 @@ watch(route, (newRoute) => {
 .cw4 {
   width: 420px;
   height: 110px;
-  top: 38%;
+  bottom: 120px;
   right: 60px;
   background: radial-gradient(ellipse at 55% 50%, var(--cloud-wisp-color, rgba(255,255,255,0.09)) 0%, transparent 65%);
   filter: blur(50px);
@@ -180,6 +249,13 @@ watch(route, (newRoute) => {
   40%       { transform: translate(34px,   6px) scale(0.99); }
   60%       { transform: translate(22px, -13px) scale(1.02); }
   80%       { transform: translate(6px,   10px) scale(0.98); }
+}
+
+@keyframes twinkle-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: calc(var(--star-opacity-main, 0.85) * 0.95); }
+  25% { transform: translate3d(-6px, 4px, 0); opacity: var(--star-opacity-main, 0.85); }
+  50% { transform: translate3d(4px, -3px, 0); opacity: calc(var(--star-opacity-main, 0.85) * 0.78); }
+  75% { transform: translate3d(-3px, -5px, 0); opacity: calc(var(--star-opacity-main, 0.85) * 0.9); }
 }
 
 /* ── el-container layout ── */
@@ -202,7 +278,7 @@ watch(route, (newRoute) => {
 }
 
 .layout-main {
-  padding: 24px !important;
+  padding: 24px;
   overflow-y: auto !important;
   flex: 1;
   min-height: 0;

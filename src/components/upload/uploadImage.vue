@@ -141,9 +141,9 @@ const headers = {
   Authorization: `Bearer ${userStore.token || ""}`
 };
 const uploadRef = ref();
-const action = ref(import.meta.env.VITE_AP_BASE_FILE);
+const action = ref(import.meta.env.VITE_AP_BASE_IMAGE_URL);
 const data = ref({
-  is_source: 'mindcare',
+  is_source: 'sleep',
 });
 const state = reactive({
   uploadLoading: false, // 图片文件大时 呈现出一个上传中的loading状态
@@ -268,7 +268,7 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
   if (rawFile.size / 1024 > props.fileSize) {
     state.uploadLoading = false
     ElMessage.error(`图片大小不得超过${props.fileSize}KB!`)
-    return 
+    return false
   }
   // 文件验证通过,立即显示进度条
   state.uploadLoading = true;
@@ -292,7 +292,6 @@ onBeforeUnmount(() => {
   uploadRef.value.clearFiles();
 });
 </script>
-<style scoped lang="scss"></style>
 <style scoped lang="scss">
 .l-upload {
   :deep(.el-upload--picture-card) {

@@ -1,5 +1,4 @@
 export const SLEEP_USER_STORE_STORAGE_KEY = 'panda-sleep-admin:sleepUser'
-export const DEFAULT_TOKEN = 'sleep-user-default-token'
 
 const TOKEN_KEY = 'token'
 
@@ -11,13 +10,13 @@ function getPersistedUserState(): PersistedUserState {
   const rawValue = localStorage.getItem(SLEEP_USER_STORE_STORAGE_KEY)
 
   if (!rawValue) {
-    return { token: DEFAULT_TOKEN }
+    return {}
   }
 
   try {
     return JSON.parse(rawValue) as PersistedUserState
   } catch {
-    return { token: DEFAULT_TOKEN }
+    return {}
   }
 }
 
@@ -26,8 +25,8 @@ function setPersistedUserState(state: PersistedUserState) {
 }
 
 // 统一封装 token 读写，避免在路由和请求层重复处理本地缓存
-export function getToken() {
-  return getPersistedUserState()[TOKEN_KEY] ?? DEFAULT_TOKEN
+export function getToken(): string {
+  return getPersistedUserState()[TOKEN_KEY] || ''
 }
 
 export function setToken(token: string) {

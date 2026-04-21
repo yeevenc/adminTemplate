@@ -2,10 +2,11 @@
     <div class="upload-component">
         <!-- 上传按钮区域 -->
         <div class="upload-area" v-if="!fileList.length || !showFileList">
-            <el-upload ref="uploadRef" :action="uploadUrl" :data="data" :accept="accept" :multiple="multiple"
+            <el-upload ref="uploadRef" :action="uploadUrl" :data="data" :accept="props.accept" :multiple="multiple"
                 :before-upload="beforeUpload" :on-success="handleSuccess" :on-error="handleError"
                 :on-remove="handleRemove" :on-preview="handlePreview" :file-list="fileList" :limit="limit"
-                :on-exceed="handleExceed" :disabled="disabled" :drag="drag" :list-type="listType">
+                :on-exceed="handleExceed" :disabled="disabled" :drag="drag" :list-type="listType"
+                :auto-upload="props.autoUpload" :on-change="handleChange" :on-progress="handleProgress">
                 <div v-if="drag" class="upload-drag-area">
                     <el-icon class="upload-icon">
                         <Plus />
@@ -15,16 +16,29 @@
                     </div>
                 </div>
                 <div v-else class="upload-button">
-                    <el-button plain :size="buttonSize" :type="buttonType" :disabled="disabled">
+                    <el-button
+                        plain
+                        :size="buttonSize"
+                        :type="buttonType"
+                        :disabled="disabled || uploading"
+                        :loading="uploading"
+                    >
                         <el-icon>
                             <Upload />
-                        </el-icon>{{ buttonLabel }}
+                        </el-icon>{{ uploading ? `上传中 ${uploadProgress}%` : buttonLabel }}
                     </el-button>
                 </div>
                 <template #tip>
                     <div class="el-upload__tip" v-if="tip">
                         {{ tip }}
                     </div>
+                    <el-progress
+                        v-if="uploading"
+                        :percentage="uploadProgress"
+                        :stroke-width="6"
+                        :show-text="false"
+                        class="upload-progress"
+                    />
                 </template>
             </el-upload>
         </div>
@@ -137,6 +151,8 @@ const props = withDefaults(defineProps<{
     buttonLabel?: string
     tip?: string
     showFileList?: boolean
+    accept?: string
+    autoUpload?: boolean
 }>(), {
     modelValue: () => '',
     multiple: false,
@@ -150,6 +166,8 @@ const props = withDefaults(defineProps<{
     buttonLabel: '上传文件',
     tip: '',
     showFileList: true,
+    accept: 'video/*,.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv,.pag,.mp3',
+    autoUpload: true,
 })
 
 // 定义emit
@@ -159,20 +177,20 @@ const emit = defineEmits<{
     'error': [error: any]
     'remove': [file: any]
     'exceed': [files: FileList, fileList: any[]]
+    'file-change': [file: File]
 }>()
 // 上传文件接口地址
-const uploadUrl = import.meta.env.VITE_AP_BASE_FILE
+const uploadUrl = import.meta.env.VITE_AP_BASE_FILE_URL
 // 内部文件列表
 const fileList = ref<any[]>([])
+const uploading = ref(false)
+const uploadProgress = ref(0)
 
 // 引用上传组件
 const uploadRef = ref()
-//默认的文件类型
-const accept = ref('video/*,.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv,.pag')
-
 // 额外参数
 const data = ref({
-    is_source: import.meta.env.VITE_DATA,
+    is_source: 'sleep',
 });
 // 文件类型判断
 const isVideoFile = (file: any) => /\.(mp4|avi|mov|wmv|flv|webm|mkv)$/i.test(file.url || file.name || '')
@@ -191,6 +209,8 @@ const formatFileSize = (size: number) => {
 
 // 上传前验证
 const beforeUpload: UploadProps['beforeUpload'] = (file: File) => {
+    if (!props.autoUpload) return true
+
     // 验证文件大小
     const maxSize = props.maxSize * 1024 * 1024 // MB转字节
     if (file.size > maxSize) {
@@ -199,14 +219,25 @@ const beforeUpload: UploadProps['beforeUpload'] = (file: File) => {
     }
     // 验证文件类型
     const fileName = file.name.toLowerCase()
-    const validExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm', '.mkv', '.pag']
+    const validExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm', '.mkv', '.pag', '.mp3']
     const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext))
 
     if (!hasValidExtension) {
-        ElMessage.error('仅支持上传视频文件 (MP4, AVI, MOV, WMV, FLV, WebM, MKV)!')
+        ElMessage.error('仅支持上传视频文件 (MP4, AVI, MOV, WMV, FLV, WebM, MKV) 和音频文件 (MP3)!')
         return false
     }
+
+    uploading.value = true
+    uploadProgress.value = 0
+    emit('file-change', file)
     return true
+}
+
+// 手动选择模式下的文件变化处理
+const handleChange = (uploadFile: any) => {
+    if (!props.autoUpload && uploadFile.raw) {
+        emit('file-change', uploadFile.raw)
+    }
 }
 
 // 上传成功处理
@@ -233,13 +264,23 @@ const handleSuccess = (response: any, file: any, uploadFileList: any[]) => {
         }
     }
     emit('success', file, newFileList)
+    uploadProgress.value = 100
+    uploading.value = false
     ElMessage.success('上传成功!')
 }
 
 // 上传错误处理
 const handleError = (error: any) => {
+    uploading.value = false
+    uploadProgress.value = 0
     ElMessage.error('上传失败!')
     emit('error', error)
+}
+
+// 上传进度处理
+const handleProgress: UploadProps['onProgress'] = (event) => {
+    uploading.value = true
+    uploadProgress.value = Math.min(99, Math.floor(event.percent || 0))
 }
 
 // 文件移除处理
@@ -373,6 +414,10 @@ defineExpose({
 
 .upload-button {
     display: inline-block;
+}
+
+.upload-progress {
+    margin-top: 8px;
 }
 
 .file-list-container {
