@@ -208,6 +208,8 @@ async function handleLogin() {
   z-index: 1;
   width: 380px;
   padding: 40px 36px 36px;
+  transform-origin: center center;
+  animation: login-card-enter 0.55s cubic-bezier(0.2, 0.85, 0.24, 1) both;
 }
 
 .login-header {
@@ -321,5 +323,16 @@ async function handleLogin() {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
+}
+
+@keyframes login-card-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>

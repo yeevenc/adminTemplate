@@ -20,7 +20,7 @@ import type {
   ResourceEnv,
   SecondaryObItem,
 } from './types'
-
+import {selectListData, type SelectOption} from '@/utils/useConfig'
 type DialogMode = 'create' | 'edit' | 'copy'
 
 interface StrategyFormState {
@@ -42,10 +42,6 @@ interface StrategyFormState {
   test_ali_pay_switch: 1 | 2 | ''
 }
 
-interface SelectOption {
-  label: string
-  value: number | string
-}
 
 interface OptionBundle {
   subscription: SelectOption[]
@@ -130,27 +126,12 @@ const rules: FormRules<StrategyFormState> = {
   test_two_cancel_id: [
     { required: true, message: '请选择实验组挽留页配置id（第2次）', trigger: 'change' },
   ],
-  test_ali_pay_switch: [{ required: true, message: '请选择支付方式', trigger: 'change' }],
 }
 
 const resetForm = () => {
   Object.assign(form, getDefaultForm())
   dialogMode.value = 'create'
   formRef.value?.clearValidate()
-}
-
-const mapPageOptions = (list: ObPageIdItem[]): SelectOption[] => {
-  return (list || [])
-    .map((item) => {
-      const id = (item.id ?? item.value) as number | string | undefined
-      const label = item.label ?? (id !== undefined ? String(id) : '')
-      if (id === undefined) return null
-      return {
-        label: label ? `${id}-${label}` : String(id),
-        value: id,
-      }
-    })
-    .filter((item): item is SelectOption => !!item)
 }
 
 const applyOptions = (bundle: OptionBundle) => {
@@ -178,12 +159,9 @@ const loadOptions = async () => {
   const secondaryList = Array.isArray(secondaryRes.data?.list) ? secondaryRes.data.list : []
 
   const bundle: OptionBundle = {
-    subscription: mapPageOptions(subList),
-    retain: mapPageOptions(retainList),
-    secondaryOb: secondaryList.map((item) => ({
-      label: `${item.id}-${item.title}`,
-      value: item.id,
-    })),
+    subscription: selectListData(subList),
+    retain: selectListData(retainList),
+    secondaryOb: selectListData(secondaryList)
   }
   optionsCache.set(env.value, bundle)
   applyOptions(bundle)
@@ -330,8 +308,8 @@ defineExpose({ openCreate, openEdit, openCopy })
       v-loading="detailLoading"
       :model="form"
       :rules="rules"
-      label-width="160px"
-      label-position="right"
+      label-width="auto"
+      label-position="left"
     >
       <el-form-item label="策略名称" prop="title">
         <el-input v-model="form.title" placeholder="请输入" />
@@ -467,7 +445,7 @@ defineExpose({ openCreate, openEdit, openCopy })
           />
         </el-form-item>
 
-        <el-form-item label="支付方式切换" prop="test_ali_pay_switch">
+        <el-form-item label="支付方式切换">
           <el-radio-group v-model="form.test_ali_pay_switch">
             <el-radio v-for="item in PAY_SWITCH_OPTIONS" :key="item.value" :value="item.value">
               {{ item.label }}

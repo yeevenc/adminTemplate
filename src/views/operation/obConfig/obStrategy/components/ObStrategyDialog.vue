@@ -458,7 +458,7 @@ defineExpose({ openCreate, openEdit, openCopy })
         </el-checkbox>
         <el-divider direction="vertical" />
         <el-checkbox-group v-model="form.is_silent">
-          <el-checkbox v-for="item in USER_OPTIONS" :key="item.value" :label="item.value">
+          <el-checkbox v-for="item in USER_OPTIONS" :key="item.value" :value="item.value">
             {{ item.label }}
           </el-checkbox>
         </el-checkbox-group>
@@ -468,7 +468,7 @@ defineExpose({ openCreate, openEdit, openCopy })
         <el-checkbox v-model="channelAll" :indeterminate="channelIndeterminate">全选</el-checkbox>
         <el-divider direction="vertical" />
         <el-checkbox-group v-model="form.channel">
-          <el-checkbox v-for="item in CHANNEL_OPTIONS" :key="item.value" :label="item.value">
+          <el-checkbox v-for="item in CHANNEL_OPTIONS" :key="item.value" :value="item.value">
             {{ item.label }}
           </el-checkbox>
         </el-checkbox-group>
@@ -480,7 +480,7 @@ defineExpose({ openCreate, openEdit, openCopy })
         </el-checkbox>
         <el-divider direction="vertical" />
         <el-checkbox-group v-model="form.sensors_channel">
-          <el-checkbox v-for="item in SENSORS_CHANNEL_OPTIONS" :key="item.value" :label="item.value">
+          <el-checkbox v-for="item in SENSORS_CHANNEL_OPTIONS" :key="item.value" :value="item.value">
             {{ item.label }}
           </el-checkbox>
         </el-checkbox-group>
@@ -490,7 +490,7 @@ defineExpose({ openCreate, openEdit, openCopy })
         <el-checkbox v-model="ageAll" :indeterminate="ageIndeterminate">全选</el-checkbox>
         <el-divider direction="vertical" />
         <el-checkbox-group v-model="form.age">
-          <el-checkbox v-for="item in AGE_OPTIONS" :key="item.value" :label="item.value">
+          <el-checkbox v-for="item in AGE_OPTIONS" :key="item.value" :value="item.value">
             {{ item.label }}
           </el-checkbox>
         </el-checkbox-group>

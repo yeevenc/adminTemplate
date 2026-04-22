@@ -35,6 +35,8 @@ const DEFAULT_ERROR_MESSAGE = '服务异常，请稍后重试'
 const SUCCESS_CODE_LIST = [0, 200]
 const UNAUTHORIZED_CODE = 401
 const EXPIRED_LOGIN_CODE = 501
+const HTTP_NOT_FOUND = 404
+const HTTP_SERVER_ERROR = 500
 
 function showErrorMessage(message?: string) {
   ElMessage.error(message || DEFAULT_ERROR_MESSAGE)
@@ -72,6 +74,12 @@ function closeGlobalLoading() {
   if (loadingCount === 0 && loadingInstance) {
     loadingInstance.close()
     loadingInstance = null
+  }
+}
+
+function redirectToErrorPage(path: '/404' | '/500') {
+  if (router.currentRoute.value.path !== path) {
+    router.push(path)
   }
 }
 
@@ -172,8 +180,13 @@ function createRequestService(): AxiosInstance {
         // On login page (or redirect already in progress): fall through so showErrorMessage runs below
       }
 
-      if (status === 500) {
-        router.push('/500')
+      if (status === HTTP_NOT_FOUND) {
+        redirectToErrorPage('/404')
+        return Promise.reject(error)
+      }
+
+      if (status === HTTP_SERVER_ERROR) {
+        redirectToErrorPage('/500')
         return Promise.reject(error)
       }
 

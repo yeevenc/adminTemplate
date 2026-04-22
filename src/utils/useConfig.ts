@@ -155,7 +155,7 @@ export const selectListData = (data?: SelectListItem[]): SelectOption[] => {
     const text = item.title ?? item.name
     if (item.id !== undefined && text !== undefined) {
       result.push({
-        label: text,
+        label: item.id  + '-' + text,
         value: item.id,
       })
     }

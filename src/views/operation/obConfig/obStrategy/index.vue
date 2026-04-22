@@ -327,7 +327,7 @@ onMounted(() => {
           </template>
         </el-table-column>
 
-        <el-table-column label="平台" min-width="140">
+        <el-table-column label="平台" min-width="200">
           <template #default="{ row }">
             <el-space wrap size="small">
               <el-tag v-for="item in row.channel" :key="item" type="success">

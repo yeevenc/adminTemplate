@@ -115,31 +115,24 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         </svg>
       </div>
 
-      <!-- 锥形光束 SVG：从顶部一个点扩散到底部最宽 5%，三角锥形 -->
+      <!-- 锥形光束 SVG：顶部贴合灯罩底口宽度，由上至下扩散 -->
       <svg
         class="beam-svg"
-        viewBox="0 0 100 100"
+        viewBox="0 0 200 1000"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
           <linearGradient id="lamplock-beamG2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#FDE68A" stop-opacity="0.82"/>
-            <stop offset="32%"  stop-color="#FDE68A" stop-opacity="0.40"/>
-            <stop offset="68%"  stop-color="#FDE68A" stop-opacity="0.12"/>
+            <stop offset="0%"   stop-color="#FEF3C7" stop-opacity="0.72"/>
+            <stop offset="28%"  stop-color="#FDE68A" stop-opacity="0.34"/>
+            <stop offset="65%"  stop-color="#FDE68A" stop-opacity="0.1"/>
             <stop offset="100%" stop-color="#FDE68A" stop-opacity="0"/>
           </linearGradient>
         </defs>
-        <!--
-          三角锥形光束：
-          - 顶部收于一点 (50, 0)
-          - 底部最宽 5%（x=47.5 ~ x=52.5）
-          - 左右两侧用三次贝塞尔曲线，光束边缘自然向外扩散
-          - 右侧：M50,0 → C51.5,22 52.5,58 52.5,100
-          - 左侧：L47.5,100 → C47.5,58 48.5,22 50,0
-        -->
+        <!-- 梯形光束：顶 64 宽（精确匹配灯罩底口 x=68~132），底 160 宽 -->
         <path
-          d="M50,0 C51.5,22 52.5,58 52.5,100 L47.5,100 C47.5,58 48.5,22 50,0 Z"
+          d="M68,0 L132,0 L180,1000 L20,1000 Z"
           fill="url(#lamplock-beamG2)"
         />
       </svg>
@@ -188,40 +181,8 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   z-index: 10000; /* 必须 > cord-wrap(9999) */
   cursor: pointer;
   overflow: hidden;
-  /* 深色夜空底色 + 丰富星点层 */
+  /* 深色夜空底色 + 紫色氛围光晕（星星移到 ::before/::after 以便闪烁） */
   background:
-    /* 大亮星 */
-    radial-gradient(circle at 8%  10%, rgba(255,255,255,1)   0 2px,   transparent 3px),
-    radial-gradient(circle at 91%  7%, rgba(255,255,255,1)   0 2px,   transparent 3px),
-    radial-gradient(circle at 50%  4%, rgba(255,255,255,1)   0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 24% 19%, rgba(255,255,255,1)   0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 71% 17%, rgba(196,181,253,1)   0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 37% 31%, rgba(255,255,255,0.95)0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 83% 34%, rgba(255,255,255,0.95)0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 14% 44%, rgba(196,181,253,0.9) 0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 63% 50%, rgba(255,255,255,0.9) 0 1.5px, transparent 2.5px),
-    /* 中等星 */
-    radial-gradient(circle at 56% 46%, rgba(196,181,253,0.85)0 1px,   transparent 2px),
-    radial-gradient(circle at 89% 51%, rgba(255,255,255,0.8) 0 1px,   transparent 2px),
-    radial-gradient(circle at 34% 57%, rgba(255,255,255,0.8) 0 1px,   transparent 2px),
-    radial-gradient(circle at 69% 61%, rgba(196,181,253,0.8) 0 1px,   transparent 2px),
-    radial-gradient(circle at 11% 70%, rgba(255,255,255,0.85)0 1px,   transparent 2px),
-    radial-gradient(circle at 77% 74%, rgba(255,255,255,0.8) 0 1px,   transparent 2px),
-    radial-gradient(circle at 46% 81%, rgba(196,181,253,0.75)0 1px,   transparent 2px),
-    radial-gradient(circle at 27% 87%, rgba(255,255,255,0.75)0 1px,   transparent 2px),
-    radial-gradient(circle at 61% 91%, rgba(255,255,255,0.75)0 1px,   transparent 2px),
-    radial-gradient(circle at 94% 93%, rgba(196,181,253,0.7) 0 1px,   transparent 2px),
-    radial-gradient(circle at 18% 96%, rgba(255,255,255,0.7) 0 1px,   transparent 2px),
-    /* 小星点 */
-    radial-gradient(circle at  4% 37%, rgba(255,255,255,0.65)0 0.5px, transparent 1px),
-    radial-gradient(circle at 43% 14%, rgba(255,255,255,0.65)0 0.5px, transparent 1px),
-    radial-gradient(circle at 74% 27%, rgba(255,255,255,0.6) 0 0.5px, transparent 1px),
-    radial-gradient(circle at 19% 54%, rgba(196,181,253,0.6) 0 0.5px, transparent 1px),
-    radial-gradient(circle at 57% 67%, rgba(255,255,255,0.6) 0 0.5px, transparent 1px),
-    radial-gradient(circle at 86% 41%, rgba(255,255,255,0.6) 0 0.5px, transparent 1px),
-    radial-gradient(circle at 31% 77%, rgba(196,181,253,0.55)0 0.5px, transparent 1px),
-    radial-gradient(circle at 93% 64%, rgba(255,255,255,0.55)0 0.5px, transparent 1px),
-    radial-gradient(circle at 48% 94%, rgba(255,255,255,0.55)0 0.5px, transparent 1px),
     /* 紫色氛围光晕 */
     radial-gradient(ellipse at 50% 0%,   rgba(139,92,246,0.28) 0%, transparent 55%),
     radial-gradient(circle   at 15% 25%, rgba(139,92,246,0.15) 0%, transparent 35%),
@@ -233,6 +194,67 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   display: flex;
   align-items: flex-start;
   justify-content: center;
+}
+
+/* ── 星空层 A：大亮星 + 中星，慢闪（3.2s） ── */
+.lock-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 8%  10%, rgba(255,255,255,1)   0 2px,   transparent 3px),
+    radial-gradient(circle at 91%  7%, rgba(255,255,255,1)   0 2px,   transparent 3px),
+    radial-gradient(circle at 50%  4%, rgba(255,255,255,1)   0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 24% 19%, rgba(255,255,255,1)   0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 71% 17%, rgba(196,181,253,1)   0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 37% 31%, rgba(255,255,255,0.95)0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 83% 34%, rgba(255,255,255,0.95)0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 14% 44%, rgba(196,181,253,0.9) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 63% 50%, rgba(255,255,255,0.9) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 56% 46%, rgba(196,181,253,0.85)0 1px,   transparent 2px),
+    radial-gradient(circle at 89% 51%, rgba(255,255,255,0.8) 0 1px,   transparent 2px),
+    radial-gradient(circle at 34% 57%, rgba(255,255,255,0.8) 0 1px,   transparent 2px),
+    radial-gradient(circle at 69% 61%, rgba(196,181,253,0.8) 0 1px,   transparent 2px),
+    radial-gradient(circle at 11% 70%, rgba(255,255,255,0.85)0 1px,   transparent 2px),
+    radial-gradient(circle at 77% 74%, rgba(255,255,255,0.8) 0 1px,   transparent 2px);
+  animation: twinkleSlow 3.2s ease-in-out infinite;
+}
+
+/* ── 星空层 B：中星 + 小星点，快闪（1.9s，错相） ── */
+.lock-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 46% 81%, rgba(196,181,253,0.75)0 1px,   transparent 2px),
+    radial-gradient(circle at 27% 87%, rgba(255,255,255,0.75)0 1px,   transparent 2px),
+    radial-gradient(circle at 61% 91%, rgba(255,255,255,0.75)0 1px,   transparent 2px),
+    radial-gradient(circle at 94% 93%, rgba(196,181,253,0.7) 0 1px,   transparent 2px),
+    radial-gradient(circle at 18% 96%, rgba(255,255,255,0.7) 0 1px,   transparent 2px),
+    radial-gradient(circle at  4% 37%, rgba(255,255,255,0.65)0 0.5px, transparent 1px),
+    radial-gradient(circle at 43% 14%, rgba(255,255,255,0.65)0 0.5px, transparent 1px),
+    radial-gradient(circle at 74% 27%, rgba(255,255,255,0.6) 0 0.5px, transparent 1px),
+    radial-gradient(circle at 19% 54%, rgba(196,181,253,0.6) 0 0.5px, transparent 1px),
+    radial-gradient(circle at 57% 67%, rgba(255,255,255,0.6) 0 0.5px, transparent 1px),
+    radial-gradient(circle at 86% 41%, rgba(255,255,255,0.6) 0 0.5px, transparent 1px),
+    radial-gradient(circle at 31% 77%, rgba(196,181,253,0.55)0 0.5px, transparent 1px),
+    radial-gradient(circle at 93% 64%, rgba(255,255,255,0.55)0 0.5px, transparent 1px),
+    radial-gradient(circle at 48% 94%, rgba(255,255,255,0.55)0 0.5px, transparent 1px);
+  animation: twinkleFast 1.9s ease-in-out infinite 0.7s;
+}
+
+@keyframes twinkleSlow {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+@keyframes twinkleFast {
+  0%, 100% { opacity: 0.95; }
+  45%      { opacity: 0.3; }
 }
 
 @keyframes slideDown {
@@ -258,18 +280,21 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   z-index: 1;
 }
 
-/* ── 全高光束 SVG：顶角圆润的梯形，由上至下缓慢扩宽 ── */
+/* ── 锥形光束 SVG：顶部贴灯罩底口，CSS blur 柔化扩散边缘 ── */
 .beam-svg {
   position: absolute;
   top: 100px;
-  left: 0;
-  width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
   height: calc(100% - 100px);
   pointer-events: none;
+  filter: blur(5px);
   animation: flicker 2.5s ease-in-out infinite;
 }
 
-/* ── 光束闪烁动画 ── */@keyframes flicker {
+/* ── 光束闪烁动画 ── */
+@keyframes flicker {
   0%, 100% { opacity: 1; }
   40%       { opacity: 0.55; }
   70%       { opacity: 0.85; }

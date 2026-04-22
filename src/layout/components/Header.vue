@@ -153,7 +153,6 @@ const handleAvatarError = () => {
           </el-avatar>
           <div class="user-info">
             <span class="user-name">{{ displayName }}</span>
-            <span class="user-role">超级管理员</span>
           </div>
           <el-icon class="chevron"><arrow-down /></el-icon>
         </div>
@@ -301,11 +300,6 @@ const handleAvatarError = () => {
   line-height: 1;
 }
 
-.user-role {
-  font-size: 11px;
-  color: var(--text-muted);
-  line-height: 1;
-}
 
 .chevron {
   color: var(--text-muted);
