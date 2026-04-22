@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const isLocked = ref(false)
 const isClosing = ref(false)
@@ -21,8 +21,14 @@ const unlock = () => {
   setTimeout(() => {
     isLocked.value = false
     isClosing.value = false
-  }, 450)
+  }, 480)
 }
+
+const onKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && isLocked.value && !isClosing.value) unlock()
+}
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
@@ -230,6 +236,7 @@ const unlock = () => {
 
 .lock-overlay.closing {
   animation: slideUp 0.45s ease-in forwards;
+  pointer-events: none;
 }
 
 @keyframes slideUp {
