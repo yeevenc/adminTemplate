@@ -50,7 +50,85 @@ const unlock = () => {
       class="lock-overlay"
       @click="unlock"
     >
-      <!-- 台灯插画占位，Task 2 填充 -->
+      <div class="lamp-wrap" @click.stop>
+        <!-- 台灯 SVG，200×280px viewBox -->
+        <svg
+          width="200"
+          height="280"
+          viewBox="0 0 200 280"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          class="lamp-svg"
+        >
+          <!-- ① 定向光束（锥形，从灯罩底部向下扩散） -->
+          <defs>
+            <linearGradient id="beamGrad" x1="100" y1="100" x2="100" y2="260" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FDE68A" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#FDE68A" stop-opacity="0"/>
+            </linearGradient>
+            <filter id="beamBlur" x="-20%" y="-5%" width="140%" height="120%">
+              <feGaussianBlur stdDeviation="5"/>
+            </filter>
+            <radialGradient id="floorGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FDE68A" stop-opacity="0.45"/>
+              <stop offset="100%" stop-color="#FDE68A" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <!-- 光束锥形 -->
+          <polygon
+            points="78,100 122,100 155,255 45,255"
+            fill="url(#beamGrad)"
+            filter="url(#beamBlur)"
+            class="beam"
+          />
+
+          <!-- 地面光斑 -->
+          <ellipse cx="100" cy="260" rx="55" ry="14" fill="url(#floorGlow)" class="beam"/>
+
+          <!-- ② 底座 -->
+          <ellipse cx="100" cy="248" rx="34" ry="10" fill="#3B1F6A" stroke="#6D28D9" stroke-width="1.5"/>
+
+          <!-- ③ 灯柱 -->
+          <rect x="97" y="130" width="6" height="120" rx="3" fill="#5B21B6"/>
+
+          <!-- ④ 灯罩（梯形，顶窄底宽） -->
+          <path
+            d="M68,100 L132,100 L148,62 L52,62 Z"
+            fill="#FCD34D"
+            stroke="#92400E"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+          <!-- 灯罩内侧阴影 -->
+          <path
+            d="M72,100 L128,100 L143,65 L57,65 Z"
+            fill="#FDE68A"
+            opacity="0.4"
+          />
+
+          <!-- ⑤ 灯罩顶部封口 -->
+          <rect x="52" y="58" width="96" height="8" rx="4" fill="#92400E"/>
+
+          <!-- ⑥ 眼睛（闭合弧线，对称居中于灯罩正面） -->
+          <!-- 左眼 -->
+          <path
+            d="M82,80 Q88,75 94,80"
+            stroke="white"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            fill="none"
+          />
+          <!-- 右眼 -->
+          <path
+            d="M106,80 Q112,75 118,80"
+            stroke="white"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            fill="none"
+          />
+        </svg>
+      </div>
     </div>
   </Teleport>
 </template>
@@ -87,5 +165,22 @@ const unlock = () => {
   0%   { transform: scaleY(1); }
   50%  { transform: scaleY(1.2); }
   100% { transform: scaleY(1); }
+}
+
+/* ── 全屏遮罩 ── */
+.lock-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(10, 4, 30, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* ── 台灯容器 ── */
+.lamp-wrap {
+  cursor: default;
 }
 </style>
