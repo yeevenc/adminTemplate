@@ -5,7 +5,7 @@ const isLocked = ref(false)
 const isPulling = ref(false)
 
 const pullCord = () => {
-  if (isPulling.value) return
+  if (isPulling.value || isLocked.value) return
   isPulling.value = true
   setTimeout(() => {
     isPulling.value = false
@@ -61,6 +61,7 @@ const unlock = () => {
   position: fixed;
   top: 0;
   left: 50%;
+  /* 水平居中初始值；swing 关键帧每帧必须保留 translateX(-50%) 以维持居中 */
   transform: translateX(-50%);
   z-index: 9999;
   cursor: pointer;
