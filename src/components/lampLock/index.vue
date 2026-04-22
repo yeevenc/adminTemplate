@@ -115,7 +115,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         </svg>
       </div>
 
-      <!-- 全高光束 SVG：顶 8% 宽 → 底 13% 宽（扩张 5%），顶角圆润 -->
+      <!-- 锥形光束 SVG：从顶部一个点扩散到底部最宽 5%，三角锥形 -->
       <svg
         class="beam-svg"
         viewBox="0 0 100 100"
@@ -124,19 +124,22 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
       >
         <defs>
           <linearGradient id="lamplock-beamG2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#FDE68A" stop-opacity="0.72"/>
-            <stop offset="38%"  stop-color="#FDE68A" stop-opacity="0.28"/>
-            <stop offset="72%"  stop-color="#FDE68A" stop-opacity="0.07"/>
+            <stop offset="0%"   stop-color="#FDE68A" stop-opacity="0.82"/>
+            <stop offset="32%"  stop-color="#FDE68A" stop-opacity="0.40"/>
+            <stop offset="68%"  stop-color="#FDE68A" stop-opacity="0.12"/>
             <stop offset="100%" stop-color="#FDE68A" stop-opacity="0"/>
           </linearGradient>
         </defs>
         <!--
-          梯形：顶 x=46~54（8%），底 x=43.5~56.5（13%）
-          顶角用二次贝塞尔圆角，radius ≈ 3 单位
-          M49,0  → Q54,0 54,3  → 右侧 → 底边 → 左侧 → Q46,0 49,0
+          三角锥形光束：
+          - 顶部收于一点 (50, 0)
+          - 底部最宽 5%（x=47.5 ~ x=52.5）
+          - 左右两侧用三次贝塞尔曲线，光束边缘自然向外扩散
+          - 右侧：M50,0 → C51.5,22 52.5,58 52.5,100
+          - 左侧：L47.5,100 → C47.5,58 48.5,22 50,0
         -->
         <path
-          d="M49,0 L51,0 Q54,0 54,3 L56.5,100 L43.5,100 L46,3 Q46,0 49,0 Z"
+          d="M50,0 C51.5,22 52.5,58 52.5,100 L47.5,100 C47.5,58 48.5,22 50,0 Z"
           fill="url(#lamplock-beamG2)"
         />
       </svg>
