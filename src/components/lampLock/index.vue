@@ -62,14 +62,14 @@ const unlock = () => {
         >
           <!-- ① 定向光束（锥形，从灯罩底部向下扩散） -->
           <defs>
-            <linearGradient id="beamGrad" x1="100" y1="100" x2="100" y2="260" gradientUnits="userSpaceOnUse">
+            <linearGradient id="lamplock-beamGrad" x1="100" y1="100" x2="100" y2="260" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stop-color="#FDE68A" stop-opacity="0.55"/>
               <stop offset="100%" stop-color="#FDE68A" stop-opacity="0"/>
             </linearGradient>
-            <filter id="beamBlur" x="-20%" y="-5%" width="140%" height="120%">
+            <filter id="lamplock-beamBlur" x="-20%" y="-5%" width="140%" height="120%">
               <feGaussianBlur stdDeviation="5"/>
             </filter>
-            <radialGradient id="floorGlow" cx="50%" cy="50%" r="50%">
+            <radialGradient id="lamplock-floorGlow" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stop-color="#FDE68A" stop-opacity="0.45"/>
               <stop offset="100%" stop-color="#FDE68A" stop-opacity="0"/>
             </radialGradient>
@@ -78,13 +78,13 @@ const unlock = () => {
           <!-- 光束锥形 -->
           <polygon
             points="78,100 122,100 155,255 45,255"
-            fill="url(#beamGrad)"
-            filter="url(#beamBlur)"
+            fill="url(#lamplock-beamGrad)"
+            filter="url(#lamplock-beamBlur)"
             class="beam"
           />
 
           <!-- 地面光斑 -->
-          <ellipse cx="100" cy="260" rx="55" ry="14" fill="url(#floorGlow)" class="beam"/>
+          <ellipse cx="100" cy="260" rx="55" ry="14" fill="url(#lamplock-floorGlow)" class="beam"/>
 
           <!-- ② 底座 -->
           <ellipse cx="100" cy="248" rx="34" ry="10" fill="#3B1F6A" stroke="#6D28D9" stroke-width="1.5"/>
