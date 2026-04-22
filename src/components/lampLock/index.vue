@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 
 const isLocked = ref(false)
+const isClosing = ref(false)
 const isPulling = ref(false)
 
 const pullCord = () => {
@@ -10,11 +11,17 @@ const pullCord = () => {
   setTimeout(() => {
     isPulling.value = false
     isLocked.value = true
+    isClosing.value = false
   }, 250)
 }
 
 const unlock = () => {
-  isLocked.value = false
+  if (isClosing.value) return
+  isClosing.value = true
+  setTimeout(() => {
+    isLocked.value = false
+    isClosing.value = false
+  }, 450)
 }
 </script>
 
@@ -48,6 +55,7 @@ const unlock = () => {
     <div
       v-if="isLocked"
       class="lock-overlay"
+      :class="{ closing: isClosing }"
       @click="unlock"
     >
       <div class="lamp-wrap" @click.stop>
@@ -218,5 +226,14 @@ const unlock = () => {
   0%, 100% { opacity: 1; }
   40%       { opacity: 0.55; }
   70%       { opacity: 0.85; }
+}
+
+.lock-overlay.closing {
+  animation: slideUp 0.45s ease-in forwards;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-100%); }
 }
 </style>

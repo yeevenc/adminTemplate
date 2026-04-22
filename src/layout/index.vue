@@ -6,6 +6,7 @@ import { useTabs } from '@/stores/tabs'
 import Sidebar from '@/layout/components/Sidebar.vue'
 import Header from '@/layout/components/Header.vue'
 import TagBar from '@/layout/components/TagBar.vue'
+import LampLock from '@/components/lampLock/index.vue'
 
 const { state } = useTheme()
 const route = useRoute()
@@ -18,6 +19,7 @@ watch(route, (newRoute) => {
 
 <template>
   <div class="admin-layout">
+    <LampLock />
     <!-- 星空背景层 -->
     <div class="bg-scene" aria-hidden="true">
       <div class="stars stars-1" />
