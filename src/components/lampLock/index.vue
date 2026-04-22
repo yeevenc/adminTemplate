@@ -115,8 +115,31 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         </svg>
       </div>
 
-      <!-- 全高光束：从灯罩底部向下铺满屏幕 -->
-      <div class="full-beam"></div>
+      <!-- 全高光束 SVG：顶 8% 宽 → 底 13% 宽（扩张 5%），顶角圆润 -->
+      <svg
+        class="beam-svg"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <linearGradient id="lamplock-beamG2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#FDE68A" stop-opacity="0.72"/>
+            <stop offset="38%"  stop-color="#FDE68A" stop-opacity="0.28"/>
+            <stop offset="72%"  stop-color="#FDE68A" stop-opacity="0.07"/>
+            <stop offset="100%" stop-color="#FDE68A" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!--
+          梯形：顶 x=46~54（8%），底 x=43.5~56.5（13%）
+          顶角用二次贝塞尔圆角，radius ≈ 3 单位
+          M49,0  → Q54,0 54,3  → 右侧 → 底边 → 左侧 → Q46,0 49,0
+        -->
+        <path
+          d="M49,0 L51,0 Q54,0 54,3 L56.5,100 L43.5,100 L46,3 Q46,0 49,0 Z"
+          fill="url(#lamplock-beamG2)"
+        />
+      </svg>
     </div>
   </Teleport>
 </template>
@@ -232,23 +255,15 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   z-index: 1;
 }
 
-/* ── 全高光束：椭圆径向渐变，细长聚焦光柱 ── */
-.full-beam {
+/* ── 全高光束 SVG：顶角圆润的梯形，由上至下缓慢扩宽 ── */
+.beam-svg {
   position: absolute;
   top: 100px;
   left: 0;
-  right: 0;
-  bottom: 0;
-  /* 椭圆渐变：顶部聚焦约 10% 宽，向下自然扩散，边缘柔和无硬边 */
-  background: radial-gradient(
-    ellipse 10% 85% at 50% 0%,
-    rgba(253, 230, 138, 0.75) 0%,
-    rgba(253, 230, 138, 0.35) 30%,
-    rgba(253, 230, 138, 0.10) 60%,
-    transparent 80%
-  );
-  animation: flicker 2.5s ease-in-out infinite;
+  width: 100%;
+  height: calc(100% - 100px);
   pointer-events: none;
+  animation: flicker 2.5s ease-in-out infinite;
 }
 
 /* ── 光束闪烁动画 ── */@keyframes flicker {
