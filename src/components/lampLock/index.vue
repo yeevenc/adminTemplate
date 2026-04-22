@@ -202,20 +202,22 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
     radial-gradient(circle   at 85% 75%, rgba(109,40,217,0.12) 0%, transparent 35%),
     /* 深夜空底色 */
     linear-gradient(180deg, #040210 0%, #090522 45%, #070418 100%);
-  /* 滑入动画：多步 keyframe 强回弹 */
-  animation: slideDown 0.8s ease-out forwards;
+  /* 滑入动画：逐帧 timing-function 丝滑强回弹 */
+  animation: slideDown 1.1s linear forwards;
   display: flex;
   align-items: flex-start;
   justify-content: center;
 }
 
 @keyframes slideDown {
-  0%   { transform: translateY(-100%); }
-  60%  { transform: translateY(12%); }   /* 强力冲过底部 */
-  72%  { transform: translateY(-5%); }   /* 第一次回弹 */
-  82%  { transform: translateY(3%); }    /* 第二次弹落 */
-  90%  { transform: translateY(-1.5%); } /* 第三次小弹 */
-  96%  { transform: translateY(0.5%); }
+  /* 逐帧指定 timing-function，实现丝滑物理弹簧感 */
+  0%   { transform: translateY(-100%); animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+  52%  { transform: translateY(22%);   animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1); } /* 强力冲底 */
+  60%  { transform: translateY(18%);   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+  71%  { transform: translateY(-9%);   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); } /* 强力反弹 */
+  80%  { transform: translateY(4%);    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); } /* 二次落 */
+  88%  { transform: translateY(-2%);   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); } /* 三次微弹 */
+  94%  { transform: translateY(0.6%);  animation-timing-function: ease-in-out; }
   100% { transform: translateY(0); }
 }
 
@@ -230,21 +232,20 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   z-index: 1;
 }
 
-/* ── 全高光束：从灯罩底部向下铺满屏幕 ── */
+/* ── 全高光束：椭圆径向渐变，细长聚焦光柱 ── */
 .full-beam {
   position: absolute;
-  top: 100px; /* 灯罩底部开口的屏幕 y 坐标 */
+  top: 100px;
   left: 0;
   right: 0;
   bottom: 0;
-  /* 锥形裁切：顶部约 22% 宽，向下扩散至全宽 */
-  clip-path: polygon(39% 0%, 61% 0%, 97% 100%, 3% 100%);
-  background: linear-gradient(
-    180deg,
-    rgba(253, 230, 138, 0.55) 0%,
-    rgba(253, 230, 138, 0.22) 35%,
-    rgba(253, 230, 138, 0.07) 65%,
-    transparent 100%
+  /* 椭圆渐变：顶部聚焦约 10% 宽，向下自然扩散，边缘柔和无硬边 */
+  background: radial-gradient(
+    ellipse 10% 85% at 50% 0%,
+    rgba(253, 230, 138, 0.75) 0%,
+    rgba(253, 230, 138, 0.35) 30%,
+    rgba(253, 230, 138, 0.10) 60%,
+    transparent 80%
   );
   animation: flicker 2.5s ease-in-out infinite;
   pointer-events: none;
