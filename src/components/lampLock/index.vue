@@ -65,48 +65,19 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
       @click="unlock"
     >
       <div class="lamp-wrap" @click.stop>
-        <!-- 台灯 SVG，200×280px viewBox -->
+        <!-- 台灯 SVG，只含灯罩+灯柱顶部，顶部挂灯样式 -->
         <svg
           width="200"
-          height="280"
-          viewBox="0 0 200 280"
+          height="160"
+          viewBox="0 0 200 160"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           class="lamp-svg"
         >
-          <!-- ① 定向光束（锥形，从灯罩底部向下扩散） -->
-          <defs>
-            <linearGradient id="lamplock-beamGrad" x1="100" y1="100" x2="100" y2="260" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#FDE68A" stop-opacity="0.55"/>
-              <stop offset="100%" stop-color="#FDE68A" stop-opacity="0"/>
-            </linearGradient>
-            <filter id="lamplock-beamBlur" x="-20%" y="-5%" width="140%" height="120%">
-              <feGaussianBlur stdDeviation="5"/>
-            </filter>
-            <radialGradient id="lamplock-floorGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#FDE68A" stop-opacity="0.45"/>
-              <stop offset="100%" stop-color="#FDE68A" stop-opacity="0"/>
-            </radialGradient>
-          </defs>
+          <!-- 灯柱顶部（短节，延伸向下接光束区域） -->
+          <rect x="97" y="100" width="6" height="60" rx="3" fill="#5B21B6"/>
 
-          <!-- 光束锥形 -->
-          <polygon
-            points="78,100 122,100 155,255 45,255"
-            fill="url(#lamplock-beamGrad)"
-            filter="url(#lamplock-beamBlur)"
-            class="beam"
-          />
-
-          <!-- 地面光斑 -->
-          <ellipse cx="100" cy="260" rx="55" ry="14" fill="url(#lamplock-floorGlow)" class="beam"/>
-
-          <!-- ② 底座 -->
-          <ellipse cx="100" cy="248" rx="34" ry="10" fill="#3B1F6A" stroke="#6D28D9" stroke-width="1.5"/>
-
-          <!-- ③ 灯柱 -->
-          <rect x="97" y="130" width="6" height="120" rx="3" fill="#5B21B6"/>
-
-          <!-- ④ 灯罩（梯形，顶窄底宽） -->
+          <!-- 灯罩（梯形，顶窄底宽） -->
           <path
             d="M68,100 L132,100 L148,62 L52,62 Z"
             fill="#FCD34D"
@@ -114,17 +85,17 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
             stroke-width="2"
             stroke-linejoin="round"
           />
-          <!-- 灯罩内侧阴影 -->
+          <!-- 灯罩内侧高光 -->
           <path
             d="M72,100 L128,100 L143,65 L57,65 Z"
             fill="#FDE68A"
             opacity="0.4"
           />
 
-          <!-- ⑤ 灯罩顶部封口 -->
+          <!-- 灯罩顶部封口 -->
           <rect x="52" y="58" width="96" height="8" rx="4" fill="#92400E"/>
 
-          <!-- ⑥ 眼睛（闭合弧线，对称居中于灯罩正面） -->
+          <!-- 眼睛（闭合弧线） -->
           <!-- 左眼 -->
           <path
             d="M82,80 Q88,75 94,80"
@@ -143,6 +114,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
           />
         </svg>
       </div>
+
+      <!-- 全高光束：从灯罩底部向下铺满屏幕 -->
+      <div class="full-beam"></div>
     </div>
   </Teleport>
 </template>
@@ -187,48 +161,96 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   inset: 0;
   z-index: 10000; /* 必须 > cord-wrap(9999) */
   cursor: pointer;
-  /* 深蓝夜空背景，与项目主题一致 */
+  overflow: hidden;
+  /* 深色夜空底色 + 丰富星点层 */
   background:
-    /* 星点层 */
-    radial-gradient(circle at 15% 25%, rgba(255,255,255,0.8) 0 1px, transparent 2px),
-    radial-gradient(circle at 75% 15%, rgba(196,181,253,0.6) 0 1px, transparent 2px),
-    radial-gradient(circle at 45% 70%, rgba(255,255,255,0.7) 0 1px, transparent 2px),
-    radial-gradient(circle at 85% 55%, rgba(196,181,253,0.5) 0 1px, transparent 2px),
-    radial-gradient(circle at 30% 85%, rgba(255,255,255,0.6) 0 1px, transparent 2px),
-    radial-gradient(circle at 60% 40%, rgba(196,181,253,0.4) 0 1px, transparent 2px),
-    radial-gradient(circle at 10% 60%, rgba(255,255,255,0.5) 0 1px, transparent 2px),
-    radial-gradient(circle at 90% 80%, rgba(196,181,253,0.6) 0 1px, transparent 2px),
-    /* 氛围光晕层（增加景深） */
-    radial-gradient(circle at 20% 30%, rgba(139,92,246,0.18) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(109,40,217,0.12) 0%, transparent 50%),
-    linear-gradient(160deg, #0b0620 0%, #130b36 50%, #0e082a 100%);
-  /* 滑入动画：从顶部滑下，cubic-bezier 含回弹 */
-  animation: slideDown 0.6s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+    /* 大亮星 */
+    radial-gradient(circle at 8%  10%, rgba(255,255,255,1)   0 2px,   transparent 3px),
+    radial-gradient(circle at 91%  7%, rgba(255,255,255,1)   0 2px,   transparent 3px),
+    radial-gradient(circle at 50%  4%, rgba(255,255,255,1)   0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 24% 19%, rgba(255,255,255,1)   0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 71% 17%, rgba(196,181,253,1)   0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 37% 31%, rgba(255,255,255,0.95)0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 83% 34%, rgba(255,255,255,0.95)0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 14% 44%, rgba(196,181,253,0.9) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 63% 50%, rgba(255,255,255,0.9) 0 1.5px, transparent 2.5px),
+    /* 中等星 */
+    radial-gradient(circle at 56% 46%, rgba(196,181,253,0.85)0 1px,   transparent 2px),
+    radial-gradient(circle at 89% 51%, rgba(255,255,255,0.8) 0 1px,   transparent 2px),
+    radial-gradient(circle at 34% 57%, rgba(255,255,255,0.8) 0 1px,   transparent 2px),
+    radial-gradient(circle at 69% 61%, rgba(196,181,253,0.8) 0 1px,   transparent 2px),
+    radial-gradient(circle at 11% 70%, rgba(255,255,255,0.85)0 1px,   transparent 2px),
+    radial-gradient(circle at 77% 74%, rgba(255,255,255,0.8) 0 1px,   transparent 2px),
+    radial-gradient(circle at 46% 81%, rgba(196,181,253,0.75)0 1px,   transparent 2px),
+    radial-gradient(circle at 27% 87%, rgba(255,255,255,0.75)0 1px,   transparent 2px),
+    radial-gradient(circle at 61% 91%, rgba(255,255,255,0.75)0 1px,   transparent 2px),
+    radial-gradient(circle at 94% 93%, rgba(196,181,253,0.7) 0 1px,   transparent 2px),
+    radial-gradient(circle at 18% 96%, rgba(255,255,255,0.7) 0 1px,   transparent 2px),
+    /* 小星点 */
+    radial-gradient(circle at  4% 37%, rgba(255,255,255,0.65)0 0.5px, transparent 1px),
+    radial-gradient(circle at 43% 14%, rgba(255,255,255,0.65)0 0.5px, transparent 1px),
+    radial-gradient(circle at 74% 27%, rgba(255,255,255,0.6) 0 0.5px, transparent 1px),
+    radial-gradient(circle at 19% 54%, rgba(196,181,253,0.6) 0 0.5px, transparent 1px),
+    radial-gradient(circle at 57% 67%, rgba(255,255,255,0.6) 0 0.5px, transparent 1px),
+    radial-gradient(circle at 86% 41%, rgba(255,255,255,0.6) 0 0.5px, transparent 1px),
+    radial-gradient(circle at 31% 77%, rgba(196,181,253,0.55)0 0.5px, transparent 1px),
+    radial-gradient(circle at 93% 64%, rgba(255,255,255,0.55)0 0.5px, transparent 1px),
+    radial-gradient(circle at 48% 94%, rgba(255,255,255,0.55)0 0.5px, transparent 1px),
+    /* 紫色氛围光晕 */
+    radial-gradient(ellipse at 50% 0%,   rgba(139,92,246,0.28) 0%, transparent 55%),
+    radial-gradient(circle   at 15% 25%, rgba(139,92,246,0.15) 0%, transparent 35%),
+    radial-gradient(circle   at 85% 75%, rgba(109,40,217,0.12) 0%, transparent 35%),
+    /* 深夜空底色 */
+    linear-gradient(180deg, #040210 0%, #090522 45%, #070418 100%);
+  /* 滑入动画：多步 keyframe 强回弹 */
+  animation: slideDown 0.8s ease-out forwards;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
 @keyframes slideDown {
-  from { transform: translateY(-100%); }
-  to   { transform: translateY(0); }
+  0%   { transform: translateY(-100%); }
+  60%  { transform: translateY(12%); }   /* 强力冲过底部 */
+  72%  { transform: translateY(-5%); }   /* 第一次回弹 */
+  82%  { transform: translateY(3%); }    /* 第二次弹落 */
+  90%  { transform: translateY(-1.5%); } /* 第三次小弹 */
+  96%  { transform: translateY(0.5%); }
+  100% { transform: translateY(0); }
 }
 
-/* ── 台灯容器 ── */
+/* ── 台灯容器（顶部居中） ── */
 .lamp-wrap {
   user-select: none;
   display: flex;
   flex-direction: column;
   align-items: center;
   cursor: default;
+  position: relative;
+  z-index: 1;
 }
 
-/* ── 光束与光斑：闪烁动画 ── */
-.beam {
+/* ── 全高光束：从灯罩底部向下铺满屏幕 ── */
+.full-beam {
+  position: absolute;
+  top: 100px; /* 灯罩底部开口的屏幕 y 坐标 */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* 锥形裁切：顶部约 22% 宽，向下扩散至全宽 */
+  clip-path: polygon(39% 0%, 61% 0%, 97% 100%, 3% 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(253, 230, 138, 0.55) 0%,
+    rgba(253, 230, 138, 0.22) 35%,
+    rgba(253, 230, 138, 0.07) 65%,
+    transparent 100%
+  );
   animation: flicker 2.5s ease-in-out infinite;
+  pointer-events: none;
 }
 
-@keyframes flicker {
+/* ── 光束闪烁动画 ── */@keyframes flicker {
   0%, 100% { opacity: 1; }
   40%       { opacity: 0.55; }
   70%       { opacity: 0.85; }
