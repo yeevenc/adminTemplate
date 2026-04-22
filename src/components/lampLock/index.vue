@@ -171,16 +171,47 @@ const unlock = () => {
 .lock-overlay {
   position: fixed;
   inset: 0;
-  z-index: 10000;
-  background: rgba(10, 4, 30, 0.92);
+  z-index: 10000; /* 必须 > cord-wrap(9999) */
+  cursor: pointer;
+  /* 深蓝夜空背景，与项目主题一致 */
+  background:
+    radial-gradient(circle at 15% 25%, rgba(255,255,255,0.8) 0 1px, transparent 2px),
+    radial-gradient(circle at 75% 15%, rgba(196,181,253,0.6) 0 1px, transparent 2px),
+    radial-gradient(circle at 45% 70%, rgba(255,255,255,0.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 85% 55%, rgba(196,181,253,0.5) 0 1px, transparent 2px),
+    radial-gradient(circle at 30% 85%, rgba(255,255,255,0.6) 0 1px, transparent 2px),
+    radial-gradient(circle at 60% 40%, rgba(196,181,253,0.4) 0 1px, transparent 2px),
+    radial-gradient(circle at 10% 60%, rgba(255,255,255,0.5) 0 1px, transparent 2px),
+    radial-gradient(circle at 90% 80%, rgba(196,181,253,0.6) 0 1px, transparent 2px),
+    linear-gradient(160deg, #0b0620 0%, #130b36 50%, #0e082a 100%);
+  /* 滑入动画：从顶部滑下，cubic-bezier 含回弹 */
+  animation: slideDown 0.6s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(0); }
 }
 
 /* ── 台灯容器 ── */
 .lamp-wrap {
-  cursor: default;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── 光束与光斑：闪烁动画 ── */
+.beam {
+  animation: flicker 2.5s ease-in-out infinite;
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  40%       { opacity: 0.55; }
+  70%       { opacity: 0.85; }
 }
 </style>
