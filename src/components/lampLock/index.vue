@@ -175,6 +175,7 @@ const unlock = () => {
   cursor: pointer;
   /* 深蓝夜空背景，与项目主题一致 */
   background:
+    /* 星点层 */
     radial-gradient(circle at 15% 25%, rgba(255,255,255,0.8) 0 1px, transparent 2px),
     radial-gradient(circle at 75% 15%, rgba(196,181,253,0.6) 0 1px, transparent 2px),
     radial-gradient(circle at 45% 70%, rgba(255,255,255,0.7) 0 1px, transparent 2px),
@@ -183,6 +184,9 @@ const unlock = () => {
     radial-gradient(circle at 60% 40%, rgba(196,181,253,0.4) 0 1px, transparent 2px),
     radial-gradient(circle at 10% 60%, rgba(255,255,255,0.5) 0 1px, transparent 2px),
     radial-gradient(circle at 90% 80%, rgba(196,181,253,0.6) 0 1px, transparent 2px),
+    /* 氛围光晕层（增加景深） */
+    radial-gradient(circle at 20% 30%, rgba(139,92,246,0.18) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(109,40,217,0.12) 0%, transparent 50%),
     linear-gradient(160deg, #0b0620 0%, #130b36 50%, #0e082a 100%);
   /* 滑入动画：从顶部滑下，cubic-bezier 含回弹 */
   animation: slideDown 0.6s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
@@ -202,6 +206,7 @@ const unlock = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: default;
 }
 
 /* ── 光束与光斑：闪烁动画 ── */
