@@ -59,11 +59,11 @@ async function handleLogin() {
     </div>
 
     <!-- Login card -->
-    <div class="login-card glass-card">
+    <el-card class="login-card glass-card">
       <div class="login-header">
         <span class="login-logo-icon">🐼</span>
         <h1 class="login-title">PandaSleep Admin</h1>
-        <p class="login-subtitle">智慧睡眠管理平台</p>
+        <p class="login-subtitle">熊猫睡眠管理平台</p>
       </div>
 
       <el-form
@@ -112,7 +112,7 @@ async function handleLogin() {
           </button>
         </el-form-item>
       </el-form>
-    </div>
+    </el-card>
   </div>
 </template>
 
@@ -205,11 +205,10 @@ async function handleLogin() {
 /* ── Login card ── */
 .login-card {
   position: relative;
-  z-index: 1;
   width: 380px;
   padding: 40px 36px 36px;
   transform-origin: center center;
-  animation: login-card-enter 0.55s cubic-bezier(0.2, 0.85, 0.24, 1) both;
+  animation: login-card-enter 3s cubic-bezier(0.42, 0.85, 0.24, 1) both;
 }
 
 .login-header {
@@ -328,7 +327,7 @@ async function handleLogin() {
 @keyframes login-card-enter {
   0% {
     opacity: 0;
-    transform: scale(0.82);
+    transform: scale(0.1);
   }
   100% {
     opacity: 1;

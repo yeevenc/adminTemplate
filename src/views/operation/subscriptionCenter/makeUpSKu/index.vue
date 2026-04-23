@@ -132,7 +132,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="make-up-sku-page">
+  <div>
     <el-card shadow="never" class="glass-card">
       <el-form :model="queryForm" inline>
         <el-form-item label="环境">
@@ -245,15 +245,14 @@ onMounted(() => {
       </el-form>
     </el-card>
 
-    <el-card shadow="never" class="glass-card">
+    <el-card shadow="never" class="glass-card m-t-10">
       <el-button :icon="Plus" plain type="primary" @click="openCreate">添加</el-button>
-
       <el-table
         v-loading="loading"
         stripe
         border
         :data="tableData"
-        style="width: 100%; height: calc(100vh - 360px);"
+        style="width: 100%; height: calc(100vh - 400px);"
         class="m-t-10"
       >
         <el-table-column prop="id" label="ID" width="90" fixed="left" />
@@ -314,7 +313,7 @@ onMounted(() => {
         layout="total, sizes, prev, pager, next, jumper"
         :current-page="pagination.page"
         :page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 30, 50, 100]"
+        :page-sizes="[30, 50, 100,300]"
         :total="pagination.total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
