@@ -45,3 +45,15 @@ export const getAlipayRetryData = (params: object) => {
 export const getAlipayRetryOrderData = (params: object) => {
     return get('get_fail_list_page_v2', { params })
 }
+/**
+ * 
+ * 
+ *   h5客服用户统计
+ * 
+ * 
+ */
+
+// 获取h5客服用户统计数据
+export const getH5CustomerServiceData = (params: object) => {
+  return get('getKefuAnalysisList', { params })
+}

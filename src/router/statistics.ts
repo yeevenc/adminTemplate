@@ -33,6 +33,12 @@ export const statisticsRoutes: RouteRecordRaw[] = [
             name: 'alipayRetry',
             component: () => import('@/views/statistics/alipayRetry/index.vue'),
             meta: { title: '支付宝重新扣费' },
+          },
+          {
+            path: 'h5CustomerService',
+            name: 'h5CustomerService',
+            component: () => import('@/views/statistics/h5CustomerService/index.vue'),
+            meta: { title: 'H5客服用户' },
           }
         ],
       },
