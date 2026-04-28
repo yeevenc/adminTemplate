@@ -159,8 +159,9 @@ onMounted(fetchTableData)
     <el-card  class="glass-card ">
       <el-table v-loading="loading" :data="tableData" border stripe style="height: calc(100vh - 330px)">
         <el-table-column prop="date" sortable label="日期" width="120" align="center" />
-        <el-table-column prop="start_total" sortable label="曝光人数" align="center" />
-        <el-table-column prop="on_line_total" sortable label="人工客服介入人数" align="center" />
+        <el-table-column prop="rate" sortable label="客服介入率" align="center" />
+        <el-table-column prop="start_total" sortable label="曝光次数" align="center" />
+        <el-table-column prop="on_line_total" sortable label="人工客服介入次数" align="center" />
       </el-table>
 
       <el-pagination

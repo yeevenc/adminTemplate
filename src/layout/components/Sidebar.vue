@@ -81,9 +81,12 @@ function onSelect(index: string) {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--glass-bg);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  background: var(--glass-card)!important;
+  backdrop-filter: blur(40px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+   /* background: var(--glass-card);
+    backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px); */
   border-right: 1px solid var(--glass-border);
   overflow: hidden;
 }

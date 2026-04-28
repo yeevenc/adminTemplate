@@ -173,10 +173,10 @@ const handleAvatarError = () => {
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  /* border-bottom: 1px solid var(--glass-border); */
 }
 
 .header-search {
