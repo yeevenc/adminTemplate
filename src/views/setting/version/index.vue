@@ -1,6 +1,6 @@
 <script setup lang="ts" name="version">
 defineOptions({ name: 'version' })
-import { Search } from '@element-plus/icons-vue'
+import { Search, Plus, Edit } from '@element-plus/icons-vue'
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { ApiResponseData } from '@/utils/request'
@@ -249,9 +249,9 @@ onMounted(() => {
 
     <div class="content-grid">
       <el-card shadow="never" class="glass-card">
-          <el-button plain @click="handleOpenMarketDialog">最新版本号配置</el-button>
-          <el-button type="primary" @click="handleAdd">新增升级配置</el-button>
-        <el-table v-loading="loading" stripe border :data="tableData" class="m-t-10" style="height: calc(100vh - 300px);">
+          <el-button plain :icon="Plus" type="primary" @click="handleOpenMarketDialog">最新版本号配置</el-button>
+          <el-button type="success" plain :icon="Plus" @click="handleAdd">新增升级配置</el-button>
+        <el-table v-loading="loading" stripe border :data="tableData" class="m-t-10" style="height: calc(100vh - 350px);">
           <el-table-column prop="id" label="ID" fixed width="70" />
           <el-table-column prop="channel" label="渠道" min-width="140">
           </el-table-column>
@@ -281,17 +281,17 @@ onMounted(() => {
           <el-table-column prop="updatedAt" label="更新时间" min-width="168" />
           <el-table-column label="操作" align="center" fixed="right" width="100">
             <template #default="{ row }">
-              <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
+              <el-button link type="primary" :icon="Edit" @click="handleEdit(row)">编辑</el-button>
             </template>
           </el-table-column>
         </el-table>
           <el-pagination
-          class="m-t-10"
+            class="m-t-10"
             background
             layout="total, sizes, prev, pager, next, jumper"
             :current-page="pagination.page"
             :page-size="pagination.pageSize"
-            :page-sizes="[30, 50, 100]"
+            :page-sizes="[30, 50, 100,300]"
             :total="pagination.total"
             @size-change="handlePageSizeChange"
             @current-change="handleCurrentPageChange"
@@ -317,7 +317,7 @@ onMounted(() => {
 .version-upgrade-page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
 </style>

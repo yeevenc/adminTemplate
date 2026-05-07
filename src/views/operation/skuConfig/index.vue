@@ -201,7 +201,7 @@ onMounted(async() => {
         stripe
         border
         :data="tableData"
-        style="width: 100%; height: calc(100vh - 400px);"
+        style="width: 100%; height: calc(100vh - 350px);"
         class="m-t-10"
       >
         <el-table-column prop="id" label="skuID" width="90" fixed="left" />

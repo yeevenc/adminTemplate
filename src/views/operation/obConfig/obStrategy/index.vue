@@ -298,7 +298,7 @@ onMounted(() => {
     </el-card>
 
     <!-- 表格区：只负责展示和转发操作到弹窗组件 -->
-    <el-card shadow="never" class="glass-card m-t-10">
+    <el-card shadow="never" class="glass-card ">
       <el-button :icon="Plus" type="primary" plain @click="handleAdd">添加</el-button>
 
       <el-table
@@ -307,7 +307,7 @@ onMounted(() => {
         stripe
         border
         class="m-t-10"
-        style="width: 100%;height: calc(100vh - 360px);"
+        style="width: 100%;height: calc(100vh - 410px);"
       >
         <el-table-column prop="id" label="配置ID" width="90" fixed="left" />
         <el-table-column label="OB展示" width="90">
@@ -455,7 +455,7 @@ onMounted(() => {
 .ob-strategy-page {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
 .strategy-preview {

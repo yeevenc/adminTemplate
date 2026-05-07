@@ -332,12 +332,12 @@ onMounted(() => {
       </el-table>
 
       <el-pagination
-        class="table-pagination"
+        class="m-t-10"
         background
         layout="total, sizes, prev, pager, next, jumper"
         :current-page="pagination.page"
         :page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 30, 50, 100]"
+        :page-sizes="[30, 50, 100,300]"
         :total="pagination.total"
         @size-change="handlePageSizeChange"
         @current-change="handleCurrentPageChange"
@@ -381,31 +381,13 @@ onMounted(() => {
 .challenge-page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
 .detail-toolbar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 15px;
 }
 
-.table-pagination {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 20px;
-}
-
-@media (max-width: 768px) {
-  .filter-row,
-  .detail-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filter-item {
-    width: 100%;
-  }
-}
 </style>

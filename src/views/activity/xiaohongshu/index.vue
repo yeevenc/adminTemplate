@@ -160,7 +160,7 @@ onMounted(() => {
 
 <template>
   <div class="xiaohongshu-page">
-    <el-card shadow="never" class="glass-card filter-card">
+    <el-card shadow="never" class="glass-card">
       <el-form :model="queryForm" inline>
           <el-form-item label="状态" >
             <el-select
@@ -185,11 +185,9 @@ onMounted(() => {
       </el-form>
     </el-card>
 
-    <el-card shadow="never" class="glass-card table-card">
-      <div class="table-header-actions">
-        <el-button :icon="Plus" type="primary" @click="openCreateDialog">新增配置</el-button>
-      </div>
-      <el-table v-loading="loading" stripe border :data="tableData" style="height: calc(100vh - 300px);">
+    <el-card shadow="never" class="glass-card">
+        <el-button :icon="Plus" plain type="primary" @click="openCreateDialog">新增配置</el-button>
+      <el-table v-loading="loading" stripe border :data="tableData" style="height: calc(100vh - 350px);" class="m-t-10">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="title" label="标题" min-width="220" show-overflow-tooltip />
         <el-table-column label="封面图" width="180">
@@ -240,12 +238,12 @@ onMounted(() => {
       </el-table>
 
       <el-pagination
-        class="table-pagination"
+        class="m-t-10"
         background
         layout="total, sizes, prev, pager, next, jumper"
         :current-page="pagination.page"
         :page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 30, 50, 100]"
+        :page-sizes="[30, 50, 100,300]"
         :total="pagination.total"
         @size-change="handlePageSizeChange"
         @current-change="handleCurrentPageChange"
@@ -260,15 +258,8 @@ onMounted(() => {
 .xiaohongshu-page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
-
-.table-header-actions {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
 .cover-image {
   width: 120px;
   height: 40px;

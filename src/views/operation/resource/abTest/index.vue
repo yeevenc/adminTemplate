@@ -243,14 +243,14 @@ onMounted(() => {
     </el-card>
 
     <el-card shadow="never" class="glass-card">
-      <el-button :icon="Plus" type="primary" @click="openCreate">添加</el-button>
+      <el-button :icon="Plus" plain type="primary" @click="openCreate">添加</el-button>
 
       <el-table
         v-loading="loading"
         stripe
         border
         :data="tableData"
-        style="width: 100%; height: calc(100vh - 400px)"
+        style="width: 100%; height: calc(100vh - 350px)"
         class="m-t-10"
       >
         <el-table-column prop="id" label="ID" fixed="left" width="80" />

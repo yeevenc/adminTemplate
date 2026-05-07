@@ -1,7 +1,7 @@
 <script setup lang="ts" name="refundReviews">
 defineOptions({ name: 'refundReviews' })
 
-import { Search } from '@element-plus/icons-vue'
+import { Search, Check, Close, SetUp, Finished, View } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 import type { ApiResponseData } from '@/utils/request'
@@ -231,24 +231,61 @@ const openQiYuDialog = async (row: RefundReviewItem) => {
 }
 
 // 七鱼消息里可能混有 JSON、图片链接和普通文本，这里统一做展示兼容
+const IMG_TYPES = ['JPEG', 'JPG', 'PNG', 'GIF', 'WEBP']
+
 const formatMessage = (msg: unknown) => {
   if (typeof msg !== 'string') return String(msg ?? '')
 
   try {
-    const parsed = JSON.parse(msg)
+    const parsed = JSON.parse(msg) as Record<string, unknown>
     if (typeof parsed === 'object' && parsed) {
-      if ('text' in parsed && parsed.text) return String(parsed.text)
-      if ('content' in parsed && parsed.content) {
+      // type=text 且有 content
+      if (parsed.type === 'text' && parsed.content) {
         const content = parsed.content as Record<string, unknown>
-        if (typeof content.text === 'string') return content.text
+        return String(typeof content === 'object' ? (content.text ?? parsed.content) : parsed.content)
+      }
+      // 直接有 text 字段
+      if (parsed.text) return String(parsed.text)
+      // 有 content 字段
+      if (parsed.content) {
+        const content = parsed.content as Record<string, unknown>
+        if (typeof content === 'object' && content.text) return String(content.text)
         return String(parsed.content)
       }
-      if ('url' in parsed && parsed.url) {
-        return `<a href="${parsed.url}" target="_blank">查看附件</a>`
+      // 图片/附件（含 url + type）
+      if (parsed.url && parsed.type) {
+        if (IMG_TYPES.includes(String(parsed.type).toUpperCase())) {
+          return `<img src="${parsed.url}" class="chat-img" />`
+        }
+        return `<a href="${parsed.url}" target="_blank">附件：${parsed.name || '下载文件'}</a>`
       }
+      // 仅有 url（无 type）
+      if (parsed.url) return `<a href="${parsed.url}" target="_blank">查看附件</a>`
+      // 满意度评价消息（含 message 字段）
+      if (parsed.message) {
+        const parts = [String(parsed.message)]
+        if (parsed.remarks) parts.push(`备注：${parsed.remarks}`)
+        return parts.join('<br>')
+      }
+      // 卡片消息（type=cardMessage，含 cards 数组）
+      if (parsed.type === 'cardMessage' && Array.isArray(parsed.cards)) {
+        const parts = (parsed.cards as Array<Record<string, unknown>>)
+          .map((card) => {
+            const content = String(card.content ?? '').trim()
+            if (!content) return ''
+            // rich 类型直接渲染内容，换行转 br
+            return content.replace(/\n/g, '<br>')
+          })
+          .filter(Boolean)
+        return parts.length ? parts.join('<hr style="margin:6px 0;border-color:var(--el-border-color-light)">') : '[卡片消息]'
+      }
+      // 七鱼系统消息（含 cmd 字段）
+      if ('cmd' in parsed) return JSON.stringify(parsed, null, 2)
+      // 其他 JSON 对象兜底格式化展示
+      return JSON.stringify(parsed, null, 2)
     }
   } catch {
-    return msg.replace(/\n/g, '<br>')
+    // 非 JSON，直接处理换行
   }
 
   return msg.replace(/\n/g, '<br>')
@@ -351,24 +388,23 @@ onMounted(async () => {
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" plain @click="openLimitDialog">设置退款限额</el-button>
+          <el-button type="primary" plain :icon="SetUp" @click="openLimitDialog">设置退款限额</el-button>
         </el-form-item>
       </el-form>
 
-      <div class="m-t-10">
-        <el-button type="primary" @click="handleBatchReview(1)">批量通过</el-button>
-        <el-button type="danger" @click="handleBatchReview(2)">批量拒绝</el-button>
-      </div>
     </el-card>
 
     <el-card shadow="never" class="m-t-10">
+      <el-button type="primary" plain :icon="Check" @click="handleBatchReview(1)">批量通过</el-button>
+        <el-button type="danger" plain :icon="Close" @click="handleBatchReview(2)">批量拒绝</el-button>
       <el-table
         v-loading="loading"
         :data="tableData"
         border
         stripe
+        class="m-t-10"
         @selection-change="handleSelectionChange"
-         style="height: calc(100vh - 320px)"
+         style="height: calc(100vh - 450px)"
       >
         <el-table-column type="selection" width="48" />
         <el-table-column prop="id" label="ID" width="80" fixed="left" />
@@ -392,14 +428,14 @@ onMounted(async () => {
             <el-tag type="warning"> {{ formatComplaint(row.complaint) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="210" fixed="right" align="center">
+        <el-table-column label="操作" width="240" fixed="right" align="center">
           <template #default="{ row }">
             <template v-if="Number(row.refund_state) === 0">
-              <el-button link type="primary" @click="handleApprove(row)">通过</el-button>
-              <el-button link type="danger" @click="handleReject(row)">拒绝</el-button>
+              <el-button :icon="Check" link type="primary" @click="handleApprove(row)">通过</el-button>
+              <el-button :icon="Close" link type="danger" @click="handleReject(row)">拒绝</el-button>
             </template>
-            <el-button v-else link type="info" disabled>已处理</el-button>
-            <el-button link type="success" @click="openQiYuDialog(row)">查看七鱼记录</el-button>
+            <el-button v-else :icon="Finished" link type="info" disabled>已处理</el-button>
+            <el-button :icon="View" link type="success" @click="openQiYuDialog(row)">客服记录</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -410,7 +446,7 @@ onMounted(async () => {
         layout="total, sizes, prev, pager, next, jumper"
         :current-page="pagination.page"
         :page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 30, 50, 100]"
+        :page-sizes="[30, 50, 100,300]"
         :total="pagination.total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -440,19 +476,149 @@ onMounted(async () => {
       direction="ltr"
       size="40%"
     >
-      <div style="max-height: 60vh; overflow: auto;">
+      <el-card class="glass-card">
+      <div v-if="!messageList.length" class="chat-empty">
+        <el-empty description="暂无聊天记录" />
+      </div>
+      <div v-else class="chat-container">
         <div
           v-for="(item, index) in messageList"
           :key="index"
-          class="m-b-10"
+          class="chat-item"
+          :class="item.from === 0 ? 'chat-item--staff' : 'chat-item--user'"
         >
-          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-            <strong>{{ item.from === 0 ? item.staffName || '客服' : item.userName || '用户' }}</strong>
-            <span>{{ item.day }}</span>
+          <!-- 头像 -->
+          <el-avatar class="chat-avatar" :size="36">
+            {{ item.from === 0 ? (item.staffName || '客服').slice(0, 1) : (item.userName || '用户').slice(0, 1) }}
+          </el-avatar>
+          <!-- 消息体 -->
+          <div class="chat-body">
+            <div class="chat-meta">
+              <span class="chat-name">{{ item.from === 0 ? item.staffName || '客服' : item.userName || '用户' }}</span>
+              <span class="chat-time">{{ item.day }}</span>
+            </div>
+            <div class="chat-bubble" v-html="formatMessage(item.msg)" />
           </div>
-          <div v-html="formatMessage(item.msg)" />
         </div>
       </div>
+      </el-card>
     </el-drawer>
   </div>
 </template>
+
+<style scoped>
+/* 聊天记录容器 */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.chat-empty {
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+/* 单条消息行 */
+.chat-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+/* 用户消息：头像在右，内容靠右 */
+.chat-item--user {
+  flex-direction: row-reverse;
+}
+
+.chat-avatar {
+  flex-shrink: 0;
+}
+
+/* 客服头像色 */
+.chat-item--staff .chat-avatar {
+  background-color: var(--el-color-primary);
+}
+
+/* 用户头像色 */
+.chat-item--user .chat-avatar {
+  background-color: var(--el-color-success);
+}
+
+.chat-body {
+  display: flex;
+  flex-direction: column;
+  max-width: 70%;
+  align-items: flex-start;
+}
+
+.chat-item--user .chat-body {
+  align-items: flex-end;
+}
+
+/* 元信息：名字 + 时间 */
+.chat-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+.chat-item--user .chat-meta {
+  flex-direction: row-reverse;
+}
+
+.chat-name {
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+/* 气泡 */
+.chat-bubble {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+/* 客服气泡：左侧圆角平 */
+.chat-item--staff .chat-bubble {
+  background-color: var(--el-fill-color-light);
+  border-top-left-radius: 2px;
+  color: var(--el-text-color-primary);
+  max-width: 100%;
+}
+
+/* 用户气泡：右侧圆角平，主色背景 */
+.chat-item--user .chat-bubble {
+  background-color: var(--el-color-primary-light-7);
+  border-top-right-radius: 2px;
+    max-width: 100%;
+  color: var(--el-text-color-primary);
+}
+
+/* 气泡内图片（含富文本中带固定宽高属性的 img） */
+.chat-bubble :deep(img) {
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  display: block;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+/* 气泡内链接 */
+.chat-bubble :deep(a) {
+  color: var(--el-color-primary);
+  text-decoration: none;
+}
+
+.chat-bubble :deep(a:hover) {
+  text-decoration: underline;
+}
+</style>

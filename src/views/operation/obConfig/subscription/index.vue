@@ -161,7 +161,7 @@ onMounted(() => {
         border
         stripe
         class="m-t-10"
-        style="width: 100%"
+        style="height: calc(100vh - 350px);"
       >
         <el-table-column prop="id" label="订阅页配置ID" width="130" />
         <el-table-column prop="title" label="订阅页标题" min-width="180" show-overflow-tooltip />

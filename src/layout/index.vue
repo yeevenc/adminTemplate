@@ -280,7 +280,7 @@ watch(route, (newRoute) => {
 }
 
 .layout-main {
-  padding: 24px;
+  padding: 15px;
   overflow-y: auto !important;
   flex: 1;
   min-height: 0;

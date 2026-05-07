@@ -145,7 +145,7 @@ defineExpose({ open })
                   <el-image v-if="data.banner" :src="data.banner" fit="cover" class="hero-banner" />
                 </template>
 
-                <el-image v-else-if="data.bg_img" :src="data.bg_img" fit="cover" class="hero-banner" />
+                <el-image v-else-if="data.bg_img" :src="data.bg_img" fit="fill" class="hero-banner" style="height: 100%;" />
 
                 <el-image
                   v-if="data.checked_tip && isShowTip && data.checked_tip.checked_img"
@@ -161,11 +161,11 @@ defineExpose({ open })
                 />
 
                 <div
-                  v-if="skuList.length"
+                  v-if="skuList.length > 1 && type === 1"
                   class="sku-list"
                   :class="{ 'sku-list--column': data.style !== 0 }"
                 >
-                  <button
+                  <button 
                     v-for="(item, index) in skuList"
                     :key="item.id ?? item.sku_id ?? index"
                     type="button"
@@ -361,7 +361,7 @@ defineExpose({ open })
   flex: 1;
   overflow-y: auto;
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.06) 0%, rgba(15, 23, 42, 0.18) 100%);
-  padding-bottom: 12px;
+  padding-bottom: 0px;
 }
 
 .screen-scroll::-webkit-scrollbar {

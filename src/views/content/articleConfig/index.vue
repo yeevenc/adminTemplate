@@ -192,7 +192,7 @@ onMounted(() => {
 
     <el-card shadow="never" class="glass-card">
       <el-button :icon="Plus" type="primary" plain  @click="openCreateDialog">添加</el-button>
-      <el-table v-loading="loading" stripe border :data="tableData" style="height: calc(100vh -300px);" class="m-t-10">
+      <el-table v-loading="loading" stripe border :data="tableData" style="height: calc(100vh - 350px);" class="m-t-10">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="title" label="主标题" min-width="220" show-overflow-tooltip />
         <el-table-column prop="subtitle" label="副标题" min-width="260" show-overflow-tooltip />
@@ -264,6 +264,6 @@ onMounted(() => {
 .article-config-page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 </style>

@@ -258,7 +258,7 @@ onMounted(() => {
         stripe
         border
         :data="tableData"
-        style="height: calc(100vh - 360px);"
+        style="height: calc(100vh - 400px);"
         class="m-t-10"
       >
         <el-table-column prop="id" label="ID" width="80" fixed="left" />

@@ -1,7 +1,7 @@
 <script setup lang="ts" name="manualRefunds">
 defineOptions({ name: 'manualRefunds' })
 
-import { Search } from '@element-plus/icons-vue'
+import { Check, Search, SetUp ,Finished,Close} from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 import type { ApiResponseData } from '@/utils/request'
@@ -273,18 +273,20 @@ onMounted(async () => {
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" plain @click="openIpDialog">设置IP限制</el-button>
+         
         </el-form-item>
       </el-form>
     </el-card>
 
     <el-card shadow="never" class="m-t-10">
+       <el-button type="primary" :icon="SetUp" plain @click="openIpDialog">设置IP限制</el-button>
       <el-table
         v-loading="loading"
         :data="tableData"
         border
         stripe
-        style="height: calc(100vh - 350px)"
+        class="m-t-10"
+        style="height: calc(100vh - 400px)"
       >
         <el-table-column prop="id" label="ID" width="80" fixed="left" />
         <el-table-column prop="order_id" label="订单ID" min-width="180" fixed="left" />
@@ -303,13 +305,13 @@ onMounted(async () => {
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="150" fixed="right" align="center">
+        <el-table-column label="操作" width="180" fixed="right" align="center">
           <template #default="{ row }">
             <template v-if="Number(row.status) === 0">
-              <el-button link type="primary" @click="handleApprove(row)">通过</el-button>
-              <el-button link type="danger" @click="handleReject(row)">拒绝</el-button>
+              <el-button link type="primary" :icon="Check" @click="handleApprove(row)">通过</el-button>
+              <el-button link type="danger" :icon="Close" @click="handleReject(row)">拒绝</el-button>
             </template>
-            <el-button v-else link type="info" disabled>已处理</el-button>
+            <el-button v-else link type="info" :icon="Finished" disabled>已处理</el-button>
           </template>
         </el-table-column>
       </el-table>

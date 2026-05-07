@@ -1,6 +1,6 @@
 <script setup lang="ts" name="alipayMerchant">
 defineOptions({ name: 'alipayMerchant' })
-import { Edit } from '@element-plus/icons-vue'
+import { Edit ,Switch} from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 import type { ApiResponseData } from '@/utils/request'
@@ -204,21 +204,19 @@ onMounted(() => {
 
 <template>
   <div class="alipay-merchant-page">
-    <el-card shadow="never" class="glass-card table-card">
-      <el-tabs v-model="activeTab" stretch type="border-card" @tab-change="handleTabChange">
+     <el-segmented v-model="activeTab" :options="tabList" @change="handleTabChange" />
+    <el-card shadow="never" class="glass-card">
+      <!-- <el-tabs v-model="activeTab" stretch type="border-card" @tab-change="handleTabChange">
         <el-tab-pane
           v-for="item in tabList"
           :key="item.value"
           :label="item.label"
           :name="item.value"
-        >
-          <div class="table-header-actions">
-            <el-button type="primary" :loading="payStatusLoading" @click="handleOpenPayDialog">
+        > -->
+            <el-button type="primary" plain :icon="Switch" :loading="payStatusLoading" @click="handleOpenPayDialog">
               单年支付切换
             </el-button>
-          </div>
-
-          <el-table v-loading="loading" stripe border :data="tableData" style="height: calc(100vh - 360px);">
+          <el-table v-loading="loading" stripe border :data="tableData"  class="m-t-10" style="height: calc(100vh - 310px);">
             <el-table-column prop="id" label="ID" width="80" />
             <el-table-column prop="conf_name_title" label="名称" min-width="180" show-overflow-tooltip />
             <el-table-column prop="conf_value" label="商户号" min-width="180" show-overflow-tooltip />
@@ -232,7 +230,7 @@ onMounted(() => {
           </el-table>
 
           <el-pagination
-            class="table-pagination"
+            class="m-t-10"
             background
             layout="total, sizes, prev, pager, next, jumper"
             :current-page="pagination.page"
@@ -242,8 +240,8 @@ onMounted(() => {
             @size-change="handlePageSizeChange"
             @current-change="handleCurrentPageChange"
           />
-        </el-tab-pane>
-      </el-tabs>
+        <!-- </el-tab-pane>
+      </el-tabs> -->
     </el-card>
 
     <el-dialog
@@ -253,7 +251,7 @@ onMounted(() => {
       destroy-on-close
       @close="handleCloseEdit"
     >
-      <el-form label-width="120px">
+      <el-form label-width="auto" position="left">
         <el-form-item label="名称">
           <el-tag>{{ editForm.title }}</el-tag>
         </el-form-item>
@@ -277,7 +275,7 @@ onMounted(() => {
         <el-button @click="handleCloseEdit">取消</el-button>
         <el-button :loading="editSubmitLoading" type="primary" @click="handleSubmitEdit">保存</el-button>
       </template>
-    </el-dialog>
+    </el-dialog>    
 
     <el-dialog
       :model-value="payDialogVisible"
@@ -290,7 +288,7 @@ onMounted(() => {
         :closable="false"
         title="开启单年支付，只是针对主商户被封后，切换单次支付"
         type="warning"
-      />
+      />      
       <el-form label-width="120px" class="pay-form">
         <el-form-item label="状态">
           <el-radio-group v-model="payForm.status">
@@ -311,23 +309,10 @@ onMounted(() => {
 .alipay-merchant-page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
-
-.table-header-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.table-pagination {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 20px;
-}
-
-.pay-form {
-  margin-top: 16px;
+ .el-segmented {
+  --el-segmented-item-selected-bg-color: var(--el-color-primary);
+  --el-border-radius-base: 16px;
 }
 </style>

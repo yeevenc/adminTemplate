@@ -2,7 +2,7 @@
 defineOptions({ name: 'obTemplate' })
 
 import { onMounted, reactive, ref } from 'vue'
-import { Plus, Search } from '@element-plus/icons-vue'
+import { Plus, Search,Edit,CopyDocument } from '@element-plus/icons-vue'
 import type { ApiResponseData } from '@/utils/request'
 import { getTemplateList } from '@/api/operation'
 import SubscriptionTemplateDialog from './components/SubscriptionTemplateDialog.vue'
@@ -166,7 +166,7 @@ onMounted(() => {
       </el-form>
     </el-card>
 
-    <el-card shadow="never" class="glass-card m-t-10">
+    <el-card shadow="never" class="glass-card">
       <el-button :icon="Plus" type="primary" plain @click="handleAddSubscription">添加订阅页</el-button>
       <el-button :icon="Plus" type="warning" plain @click="handleAddRetain">添加挽留</el-button>
 
@@ -176,7 +176,7 @@ onMounted(() => {
         stripe
         border
         class="m-t-10"
-        style="height: calc(100vh - 320px)"
+        style="height: calc(100vh - 355px)"
       >
         <el-table-column prop="id" label="ID" width="80" fixed="left" />
         <el-table-column prop="title" label="模板名称" min-width="200" show-overflow-tooltip />
@@ -188,10 +188,10 @@ onMounted(() => {
           </template>
         </el-table-column>
         <el-table-column prop="remark" label="详细描述" min-width="300" show-overflow-tooltip />
-        <el-table-column label="操作" width="130" fixed="right" align="center">
+        <el-table-column label="操作" width="150" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button link type="primary" @click="handleEdit(row)">修改</el-button>
-            <el-button link type="warning" @click="handleCopy(row)">复制</el-button>
+            <el-button link type="primary" :icon="Edit" @click="handleEdit(row)">修改</el-button>
+            <el-button link type="warning" :icon="CopyDocument" @click="handleCopy(row)">复制</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -218,6 +218,6 @@ onMounted(() => {
 .template-page {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 </style>

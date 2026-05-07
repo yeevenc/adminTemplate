@@ -1,6 +1,6 @@
 <script setup lang="ts" name="versionAudit">
 defineOptions({ name: 'versionAudit' })
-
+import { Edit } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 import type { ApiResponseData } from '@/utils/request'
@@ -157,7 +157,7 @@ onMounted(() => {
 <template>
   <div class="version-audit-page">
     <el-card shadow="never" class="glass-card table-card">
-      <el-table v-loading="loading" stripe border :data="tableData" style="height: calc(100vh - 300px);">
+      <el-table v-loading="loading" stripe border :data="tableData" style="height: calc(100vh - 220px);">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="name" label="名称" min-width="180" />
         <el-table-column label="平台" min-width="140">
@@ -174,12 +174,12 @@ onMounted(() => {
       </el-table>
 
       <el-pagination
-        class="table-pagination"
+        class="m-t-10"
         background
         layout="total, sizes, prev, pager, next, jumper"
         :current-page="pagination.page"
         :page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 30, 50, 100]"
+        :page-sizes="[30, 50, 100,300]"
         :total="pagination.total"
         @size-change="handlePageSizeChange"
         @current-change="handleCurrentPageChange"
@@ -213,7 +213,7 @@ onMounted(() => {
 
       <template #footer>
         <el-button @click="handleClose">取消</el-button>
-        <el-button :loading="submitLoading" type="primary" @click="handleSubmit">保存</el-button>
+        <el-button :loading="submitLoading" :icon="Edit" type="primary" @click="handleSubmit">保存</el-button>
       </template>
     </el-dialog>
   </div>
@@ -223,16 +223,7 @@ onMounted(() => {
 .version-audit-page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
-.table-card {
-  border: none;
-}
-
-.table-pagination {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 20px;
-}
 </style>

@@ -164,7 +164,7 @@ onMounted(() => {
     </el-card>
 
     <el-card shadow="never" class="m-t-10">
-      <el-button :icon="Plus" type="primary" @click="openCreate">添加挽留</el-button>
+      <el-button :icon="Plus" plain type="primary" @click="openCreate">添加挽留</el-button>
 
       <el-table
         v-loading="loading"
@@ -172,7 +172,7 @@ onMounted(() => {
         border
         stripe
         class="m-t-10"
-        style="width: 100%"
+        style="height: calc(100vh - 340px);"
       >
         <el-table-column prop="id" label="挽留页配置ID" width="130" />
         <el-table-column prop="title" label="挽留页标题" min-width="180" show-overflow-tooltip />
