@@ -31,27 +31,30 @@ interface AdvertisingPreviewData {
   bottom_img?: string
   style?: number
   pay_button?: PreviewPayButton
+  contentBgColor?: string
 }
 
 const drawerVisible = ref(false)
 const loading = ref(false)
-const activeSkuIndex = ref(0)
+// 记录初始默认sku下标，用于checked_tip显示判断
+const defaultSkuIndex = ref(-1)
 const showCheckedTip = ref(true)
 const previewData = ref<AdvertisingPreviewData>({
   pay_button: {},
   sku_list: [],
+  contentBgColor:''
 })
 
 const skuList = computed(() => previewData.value.sku_list || [])
 const payButton = computed(() => previewData.value.pay_button || {})
 const phoneBodyStyle = computed(() => ({
   background: previewData.value.banner
-    ? 'rgba(13, 18, 34, 0.92)'
+    ? previewData.value.contentBgColor
     : 'linear-gradient(180deg, #0b1220 0%, #111a2f 100%)',
 }))
 
 const resetState = () => {
-  activeSkuIndex.value = 0
+  defaultSkuIndex.value = -1
   showCheckedTip.value = true
   previewData.value = {
     pay_button: {},
@@ -62,8 +65,8 @@ const resetState = () => {
 const applyDefaultSku = () => {
   const list = skuList.value
   const defaultIndex = list.findIndex((item) => String(item.checked) === 'true')
-  activeSkuIndex.value = defaultIndex >= 0 ? defaultIndex : 0
-  showCheckedTip.value = activeSkuIndex.value === defaultIndex && defaultIndex >= 0
+  defaultSkuIndex.value = defaultIndex
+  showCheckedTip.value = defaultIndex >= 0
 }
 
 const fetchPreviewData = async (id: number | string) => {
@@ -94,9 +97,14 @@ const getData = async (id: number | string) => {
 }
 
 const handleSkuClick = (index: number) => {
-  activeSkuIndex.value = index
-  const defaultIndex = skuList.value.findIndex((item) => String(item.checked) === 'true')
-  showCheckedTip.value = index === defaultIndex && defaultIndex >= 0
+  const list = previewData.value.sku_list
+  if (!list) return
+  // 将所有 checked 置为 false，再将选中项置为 true
+  list.forEach((item, i) => {
+    item.checked = i === index ? 'true' : 'false'
+  })
+  // 仅当选中的是初始默认项时展示 checked_tip
+  showCheckedTip.value = index === defaultSkuIndex.value && defaultSkuIndex.value >= 0
 }
 
 const handleClose = () => {
@@ -128,88 +136,92 @@ defineExpose({
             <div class="iphone-camera" />
             <div class="iphone-speaker" />
             <div class="iphone-screen" :style="phoneBodyStyle">
-              <div class="screen-scroll">
-                <el-image
-                  v-if="previewData.banner"
-                  :src="previewData.banner"
-                  fit="cover"
-                  class="hero-banner"
-                />
+              <!-- 可滚动内容区 -->
+              <div class="scroll-area">
+                <el-scrollbar height="100%">
+                  <el-image
+                    v-if="previewData.banner"
+                    :src="previewData.banner"
+                    fit="cover"
+                    class="hero-banner"
+                  />
 
-                <el-image
-                  v-if="previewData.checked_tip && showCheckedTip"
-                  :src="previewData.checked_tip.checked_img"
-                  fit="cover"
-                  class="tip-banner"
-                />
+                  <el-image
+                    v-if="previewData.checked_tip && showCheckedTip"
+                    :src="previewData.checked_tip.checked_img"
+                    fit="cover"
+                    class="tip-banner"
+                  />
 
-                <el-image
-                  v-else-if="previewData.checked_tip"
-                  :src="previewData.checked_tip.default_img"
-                  fit="cover"
-                  class="tip-banner"
-                />
-
-                <div
-                  v-if="skuList.length"
-                  class="sku-list"
-                  :class="{ 'sku-list--column': previewData.style !== 0 }"
-                >
-                  <button
-                    v-for="(item, index) in skuList"
-                    :key="item.id"
-                    type="button"
-                    class="sku-item"
-                    :class="{ 'is-active': index === activeSkuIndex }"
-                    @click="handleSkuClick(index)"
-                  >
-                    <img
-                      :src="index === activeSkuIndex ? item.background_checked : item.background_default"
-                      alt=""
-                    >
-                  </button>
-                </div>
-
-                <el-image
-                  v-if="previewData.bottom_img"
-                  :src="previewData.bottom_img"
-                  fit="cover"
-                  class="bottom-banner"
-                />
-
-                <div class="pay-panel">
-                  <div class="pay-notice" :style="{ color: payButton.title_color || '#FFFFFF' }">
-                    {{ payButton.notice || '限时优惠，仅当前页面预览使用' }}
-                  </div>
-
-                  <div class="countdown">
-                    <div
-                      v-for="item in ['10', '11', '23']"
-                      :key="item"
-                      class="countdown-box"
-                      :style="{
-                        background: payButton.countdown_bg_color || '#1f2a44',
-                        color: payButton.countdown_color || '#ffffff',
-                      }"
-                    >
-                      {{ item }}
-                    </div>
-                  </div>
+                  <el-image
+                    v-else-if="previewData.checked_tip"
+                    :src="previewData.checked_tip.default_img"
+                    fit="cover"
+                    class="tip-banner"
+                  />
 
                   <div
-                    class="pay-button"
-                    :style="{
-                      background: payButton.bg_color || 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
-                      color: payButton.title_color || '#ffffff',
-                    }"
+                    v-if="skuList.length > 1"
+                    class="sku-list"
+                    :class="{ 'sku-list--column': previewData.style !== 0 }"
                   >
-                    {{ payButton.title || '立即开通' }}
+                    <button
+                      v-for="(item, index) in skuList"
+                      :key="item.id"
+                      type="button"
+                      class="sku-item"
+                      :class="{ 'is-active': String(item.checked) === 'true' }"
+                      @click="handleSkuClick(index)"
+                    >
+                      <img
+                        :src="String(item.checked) === 'true' ? item.background_checked : item.background_default"
+                        alt=""
+                      >
+                    </button>
                   </div>
 
-                  <div class="agreement-row">
-                    <el-radio :model-value="true" disabled style="margin:0" />
-                    <span>开通前请阅读《会员协议》和《自动续订协议》</span>
+                  <el-image
+                    v-if="previewData.bottom_img"
+                    :src="previewData.bottom_img"
+                    fit="cover"
+                    class="bottom-banner"
+                  />
+                </el-scrollbar>
+              </div>
+
+              <!-- 底部固定付款区 -->
+              <div class="pay-panel">
+                <div class="pay-notice" :style="{ color: payButton.title_color || '#FFFFFF' }">
+                  {{ payButton.notice || '限时优惠，仅当前页面预览使用' }}
+                </div>
+
+                <!-- <div class="countdown">
+                  <div
+                    v-for="item in ['10', '11', '23']"
+                    :key="item"
+                    class="countdown-box"
+                    :style="{
+                      background: payButton.countdown_bg_color || '#1f2a44',
+                      color: payButton.countdown_color || '#ffffff',
+                    }"
+                  >
+                    {{ item }}
                   </div>
+                </div> -->
+
+                <div
+                  class="pay-button"
+                  :style="{
+                    background: payButton.bg_color,
+                    color: payButton.title_color || '#ffffff',
+                  }"
+                >
+                  {{ payButton.title || '立即开通' }}
+                </div>
+
+                <div class="agreement-row">
+                  <el-radio :model-value="true" disabled style="margin:0" />
+                  <span>开通前请阅读《会员协议》和《自动续订协议》</span>
                 </div>
               </div>
             </div>
@@ -299,6 +311,15 @@ defineExpose({
   border-radius: 32px;
   overflow: hidden;
   border: 1px solid rgba(12, 18, 30, 0.55);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 可滚动内容区，撑满剩余高度 */
+.scroll-area {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .screen-scroll {
@@ -364,9 +385,8 @@ defineExpose({
 }
 
 .pay-panel {
-  margin-top: 14px;
-  padding: 18px 16px 22px;
-  background: rgba(255, 255, 255, 0.96);
+  padding: 10px 15px 0px;
+  flex-shrink: 0;
 }
 
 .pay-notice {
@@ -380,7 +400,7 @@ defineExpose({
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 14px 0;
+  margin: 10px 0;
 }
 
 .countdown-box {
@@ -401,13 +421,14 @@ defineExpose({
   padding: 12px 16px;
   font-size: 15px;
   font-weight: 700;
+
 }
 
 .agreement-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 12px;
+  margin-top: 5px;
   font-size: 11px;
   color: #8b93a7;
 }
