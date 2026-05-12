@@ -27,7 +27,7 @@ interface SkuFormState {
   price: string
   first_price: string
   renew_price: string
-  duration: string
+  duration: string | number
   renew_duration: number | string
   InAppID: string
   AliPayId: string
@@ -54,6 +54,8 @@ const RENEW_DURATION_MAP: Record<string, number | ''> = {
   half_year_automatic: 183,
   year_automatic: 365,
 }
+
+const SECONDS_PER_DAY = 86400
 
 const CHALLENGE_OPTIONS: SelectOption[] = [
   { label: '否', value: 0 },
@@ -117,6 +119,21 @@ const rules: FormRules<SkuFormState> = {
   type: [{ required: true, message: '请选择类型', trigger: 'change' }],
 }
 
+// 后端时长单位是秒，表单展示和填写统一使用天
+const secondsToDays = (value: unknown) => {
+  if (value === '' || value === undefined || value === null) return ''
+  const seconds = Number(value)
+  if (Number.isNaN(seconds)) return ''
+  return seconds / SECONDS_PER_DAY
+}
+
+const daysToSeconds = (value: unknown) => {
+  if (value === '' || value === undefined || value === null) return ''
+  const days = Number(value)
+  if (Number.isNaN(days)) return ''
+  return Math.round(days * SECONDS_PER_DAY)
+}
+
 // 每次打开弹窗前重置表单，避免新增/编辑/复制之间相互污染
 const resetForm = () => {
   Object.assign(form, getDefaultForm())
@@ -132,6 +149,8 @@ const fillForm = (row: Record<string, unknown>) => {
       ;(form as Record<string, unknown>)[key as string] = value
     }
   })
+  form.duration = secondsToDays(row.duration)
+  form.renew_duration = secondsToDays(row.renew_duration)
 }
 
 // 续订时长和 sku 类型绑定，切换类型后自动回填对应天数
@@ -204,7 +223,11 @@ const handleClose = () => {
 const getSubmitPayload = () => {
   const { id, ...rest } = form
   void id
-  return rest
+  return {
+    ...rest,
+    duration: daysToSeconds(form.duration),
+    renew_duration: daysToSeconds(form.renew_duration),
+  }
 }
 
 // 编辑场景走修改接口，其余场景统一走新增接口
