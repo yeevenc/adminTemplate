@@ -30,6 +30,7 @@ interface SkuFormState {
   duration: string | number
   renew_duration: number | string
   InAppID: string
+  harmony_product_id: string
   AliPayId: string
   wx_sku: string
   plan_id: string
@@ -101,6 +102,7 @@ const getDefaultForm = (): SkuFormState => ({
   duration: '',
   renew_duration: '',
   InAppID: '',
+  harmony_product_id: '',
   AliPayId: '',
   wx_sku: '',
   plan_id: '',
@@ -417,7 +419,9 @@ defineExpose({
       <el-form-item label="InAppID">
         <el-input v-model.trim="form.InAppID" placeholder="请输入" style="width: 60%" />
       </el-form-item>
-
+       <el-form-item label="ohosID">
+        <el-input v-model.trim="form.harmony_product_id" placeholder="请输入" style="width: 60%" />
+      </el-form-item>
       <el-form-item label="支付宝ID">
         <el-input v-model.trim="form.AliPayId" placeholder="请输入" style="width: 60%" />
       </el-form-item>

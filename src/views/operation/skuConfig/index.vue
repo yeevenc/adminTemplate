@@ -235,6 +235,7 @@ onMounted(async() => {
           </template>
         </el-table-column>
         <el-table-column prop="InAppID" label="inAppId" width="200" show-overflow-tooltip />
+         <el-table-column prop="harmony_product_id" label="ohosId" width="200" show-overflow-tooltip />
         <el-table-column prop="AliPayId" label="支付宝ID" width="150" show-overflow-tooltip />
         <el-table-column prop="created_at" label="创建时间" width="180" />
         <el-table-column label="操作" width="150" align="center" fixed="right">

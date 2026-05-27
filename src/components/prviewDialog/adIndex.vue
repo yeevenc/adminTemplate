@@ -381,7 +381,6 @@ defineExpose({
 
 .bottom-banner {
   margin-top: 12px;
-  height: 72px;
 }
 
 .pay-panel {

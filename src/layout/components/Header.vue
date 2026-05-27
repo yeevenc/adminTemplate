@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useRouter, type RouteRecordRaw } from 'vue-router'
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useTheme, THEMES, setCustomPrimary } from '@/stores/theme'
 import { useSleepUserStore } from '@/stores/user'
 import { Search, SwitchButton, Monitor, Moon, Sunny } from '@element-plus/icons-vue'
-import { buildMenuTree, flattenMenuTree } from '@/layout/menu'
+import SearchModal from './SearchModal.vue'
 
 const { state, currentPreset, setPreference } = useTheme()
 const userStore = useSleepUserStore()
-const router = useRouter()
 
 const pickerColor = ref(currentPreset.value.color)
-const menuSearchValue = ref('')
 const avatarLoadFailed = ref(false)
+const searchModalVisible = ref(false)
 
 watch(() => currentPreset.value.color, (val) => { pickerColor.value = val })
 
@@ -43,22 +41,6 @@ function handleCommand(command: string) {
 }
 
 const presetColors = THEMES.map(t => t.color)
-const menuOptions = computed(() => {
-  const menuTree = buildMenuTree(router.options.routes as readonly RouteRecordRaw[])
-  return flattenMenuTree(menuTree).map((item) => ({
-    label: item.title,
-    value: item.fullPath,
-  }))
-})
-
-const handleMenuSelect = (path: string | number) => {
-  if (!path) {
-    return
-  }
-
-  menuSearchValue.value = String(path)
-  router.push(String(path))
-}
 
 // 统一从用户仓库里取展示名称，避免 header 内再写死用户名
 const displayName = computed(() => userStore.userInfo?.name?.trim() || 'Panda')
@@ -75,24 +57,28 @@ const handleAvatarError = () => {
   avatarLoadFailed.value = true
   return false
 }
+
+// Ctrl+K 快捷键打开搜索
+const handleKeydown = (e: KeyboardEvent) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault()
+    searchModalVisible.value = true
+  }
+}
+
+onMounted(() => window.addEventListener('keydown', handleKeydown))
+onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
 </script>
 
 <template>
   <div class="layout-header">
     <div class="header-search">
-      <el-select-v2
-        v-model="menuSearchValue"
-        :options="menuOptions"
-        filterable
-        clearable
-        placeholder="搜索菜单名称"
-        class="menu-search"
-        @change="handleMenuSelect"
-      >
-        <template #prefix>
-          <el-icon><Search /></el-icon>
-        </template>
-      </el-select-v2>
+      <button class="search-trigger" type="button" @click="searchModalVisible = true">
+        <el-icon class="search-trigger-icon"><Search /></el-icon>
+        <span class="search-trigger-text">搜索菜单名称</span>
+        <kbd class="search-trigger-kbd">Ctrl K</kbd>
+      </button>
+      <SearchModal v-model:visible="searchModalVisible" />
     </div>
 
     <!-- Right: controls -->
@@ -166,7 +152,7 @@ const handleAvatarError = () => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="css">
 .layout-header {
   height: 100%;
   display: flex;
@@ -180,12 +166,61 @@ const handleAvatarError = () => {
 }
 
 .header-search {
-  width: 320px;
+  width: 280px;
   min-width: 0;
 }
 
-.menu-search {
+/* 搜索触发按钮 */
+.search-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  outline: none;
+  text-align: left;
+}
+
+.search-trigger:hover {
+  background: var(--glass-hover);
+  color: var(--text-secondary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 10px var(--color-glow);
+}
+
+.search-trigger:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.search-trigger-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.search-trigger-text {
+  flex: 1;
+  letter-spacing: 0.2px;
+}
+
+.search-trigger-kbd {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-card);
+  font-size: 11px;
+  font-family: inherit;
+  color: var(--text-muted);
+  line-height: 1.5;
+  flex-shrink: 0;
 }
 
 /* Right */
@@ -313,7 +348,11 @@ const handleAvatarError = () => {
   }
 
   .header-search {
-    width: 220px;
+    width: 180px;
+  }
+
+  .search-trigger-kbd {
+    display: none;
   }
 }
 </style>
