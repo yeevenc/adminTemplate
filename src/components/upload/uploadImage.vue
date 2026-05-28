@@ -128,7 +128,7 @@ const props = defineProps({
   // 上传 文件大小限制
   fileSize: {
     type: Number,
-    default: 400,
+    default: 500,
   },
   // 上传组件的样式风格
   listType: {

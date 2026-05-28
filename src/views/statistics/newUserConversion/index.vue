@@ -110,8 +110,7 @@ const getRangeParams = () => {
 }
 
 const buildParams = () => ({
-  type: queryForm.type,
-  channel: queryForm.channel,
+ ...queryForm,
   ...getRangeParams(),
 })
 
@@ -214,7 +213,7 @@ onBeforeUnmount(() => {
           </el-select>
         </el-form-item>
          <el-form-item label="平台">
-          <el-select v-model="queryForm.platform" style="width: 160px" placeholder="请选择渠道">
+          <el-select v-model="queryForm.platform" style="width: 160px" placeholder="请选择渠道" @change="handleSearch">
             <el-option
               v-for="item in PLATFORM_OPTIONS"
               :key="item.value"
@@ -224,7 +223,7 @@ onBeforeUnmount(() => {
           </el-select>
         </el-form-item>
         <el-form-item label="渠道">
-          <el-select v-model="queryForm.channel" style="width: 160px" placeholder="请选择渠道">
+          <el-select v-model="queryForm.channel" style="width: 160px" placeholder="请选择渠道" @change="handleSearch">
             <el-option
               v-for="item in CHANNEL_OPTIONS"
               :key="item.value"
@@ -242,6 +241,7 @@ onBeforeUnmount(() => {
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             :shortcuts="dateShortcuts"
+            @change="handleSearch"
           />
         </el-form-item>
         <el-form-item v-else label="月份">
@@ -253,6 +253,7 @@ onBeforeUnmount(() => {
             start-placeholder="开始月份"
             end-placeholder="结束月份"
             :shortcuts="monthShortcuts"
+            @change="handleSearch"
           />
         </el-form-item>
         <el-form-item>

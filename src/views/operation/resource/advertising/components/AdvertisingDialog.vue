@@ -465,10 +465,10 @@ defineExpose({
       <!-- 会员卡片图 -->
       <template v-if="isMembershipCard">
         <el-form-item label="会员图">
-          <uploadImage v-model="form.vip_img" />
+          <uploadImage v-model="form.vip_img" :fileSize="500"  />
         </el-form-item>
         <el-form-item label="非会员图">
-          <uploadImage v-model="form.no_vip_img" />
+          <uploadImage v-model="form.no_vip_img" :fileSize="500"  />
         </el-form-item>
       </template>
 
@@ -573,7 +573,7 @@ defineExpose({
         </el-form-item>
 
         <el-form-item label="底部配图">
-          <uploadImage v-model="form.bottom_img" />
+          <uploadImage v-model="form.bottom_img" :fileSize="500"  />
         </el-form-item>
         <el-form-item label="小图标配图">
           <uploadImage v-model="form.small_img" />
@@ -594,7 +594,7 @@ defineExpose({
       </el-form-item>
 
       <el-form-item label="背景图">
-        <uploadImage v-model="form.banner" />
+        <uploadImage v-model="form.banner" :fileSize="700" />
       </el-form-item>
 
       <el-form-item label="背景色">
@@ -668,7 +668,7 @@ defineExpose({
             />
           </el-form-item>
           <el-form-item label="挽留图片">
-            <uploadImage v-model="form.cancel_image" />
+            <uploadImage v-model="form.cancel_image" :fileSize="700"  />
           </el-form-item>
           <el-form-item label="挽留底部背景色">
             <el-color-picker v-model="form.cancel_color" />
