@@ -45,7 +45,6 @@ const REFUND_TYPE_OPTIONS = [
 
 const loading = ref(false)
 const tableData = ref<RefundOrderItem[]>([])
-const isSearched = ref(false)
 const challengeDialogRef = ref<InstanceType<typeof ChallengeRefundDialog>>()
 const memberDialogRef = ref<InstanceType<typeof MemberRefundDialog>>()
 const manualDialogRef = ref<InstanceType<typeof ManualRefundDialog>>()
@@ -96,7 +95,6 @@ const fetchTableData = async () => {
     const list = resolveList(response.data)
     tableData.value = list
     pagination.total = resolveTotal(response.data, list)
-    if (list.length) isSearched.value = true
   } finally {
     loading.value = false
   }
@@ -144,11 +142,6 @@ const openManualRefund = (row: RefundOrderItem) => {
     pay_price: row.pay_price,
     uid: row.uid,
   })
-}
-
-const formatPayType = (type: number) => {
-  const map: Record<number, string> = { 1: '支付宝', 2: '微信', 3: 'AppPay' }
-  return map[type] || '-'
 }
 
 const formatComplaint = (text?: string) => {
@@ -240,35 +233,32 @@ onMounted(() => {
           </template>
         </el-table-column>
         <el-table-column
-          v-if="isSearched"
+           
           prop="pay_sn"
           label="支付流水号"
           width="170"
           show-overflow-tooltip
         />
         <el-table-column
-          v-if="isSearched"
+           
           prop="refund_amount"
           label="退款金额"
           width="100"
         />
-        <el-table-column v-if="isSearched" prop="platform" label="平台" width="90" />
-        <el-table-column v-if="isSearched" prop="channel" label="渠道" width="90" />
-        <el-table-column v-if="isSearched" label="支付方式" width="110">
-          <template #default="{ row }">
-            {{ formatPayType(row.pay_type) }}
-          </template>
+        <el-table-column   prop="platform" label="平台" width="90" />
+        <el-table-column   prop="channel" label="渠道" width="90" />
+        <el-table-column prop="pay_type_name"  label="支付方式" width="110">
         </el-table-column>
         <el-table-column
-          v-if="isSearched"
+           
           prop="mark"
           label="备注信息"
           width="240"
           show-overflow-tooltip
         />
         <el-table-column prop="pay_time" label="支付时间" width="180" />
-        <el-table-column v-if="isSearched" prop="created_at" label="创建时间" width="180" />
-        <el-table-column v-if="isSearched" label="是否已退款" width="100">
+        <el-table-column   prop="created_at" label="创建时间" width="180" />
+        <el-table-column   label="是否已退款" width="100">
           <template #default="{ row }">
             <el-tag :type="row.is_refund === 0 ? 'waring' : 'danger'">
               {{ row.is_refund === 0 ? '否' : '是' }}
@@ -276,7 +266,7 @@ onMounted(() => {
           </template>
         </el-table-column>
         <el-table-column
-          v-if="isSearched"
+           
           label="是否支付宝投诉/是否撤诉"
           width="200"
         >
@@ -290,7 +280,6 @@ onMounted(() => {
           </template>
         </el-table-column>
         <el-table-column
-          v-if="isSearched"
           label="操作"
           width="260"
           align="center"

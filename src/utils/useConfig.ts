@@ -16,6 +16,7 @@ export const CHANNEL_OPTIONS: SelectOption[] = [
   { label: '安卓其他', value: 'other' },
   { label: 'iOS', value: 'ios' },
   { label: '华为', value: 'huawei' },
+  { label: '鸿蒙', value: 'ohos' },
 ]
 // 用户分群-渠道筛选选项（列表搜索）
 export const USER_GROUP_CHANNEL_FILTER_OPTIONS: SelectOption[] = [

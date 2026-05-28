@@ -42,7 +42,6 @@ const PAY_STATUS_FILTER = [
 
 const loading = ref(false)
 const tableData = ref<OrderItem[]>([])
-const isSearched = ref(false)
 const dialogRef = ref<InstanceType<typeof OrderListDialog>>()
 
 const queryForm = reactive({
@@ -90,7 +89,6 @@ const fetchTableData = async () => {
     const list = resolveList(response.data)
     tableData.value = list
     pagination.total = resolveTotal(response.data, list)
-    if (list.length) isSearched.value = true
   } finally {
     loading.value = false
   }
@@ -118,11 +116,6 @@ const openCreate = () => {
 
 const handleEdit = (row: OrderItem) => {
   dialogRef.value?.openEdit({ order_id: row.order_id })
-}
-
-const formatPayType = (type: number) => {
-  const map: Record<number, string> = { 1: '支付宝', 2: '微信', 3: 'inapp_ios' }
-  return map[type] || '-'
 }
 
 onMounted(() => {
@@ -217,20 +210,20 @@ onMounted(() => {
           </template>
         </el-table-column>
         <el-table-column
-          v-if="isSearched"
+           
           prop="pay_sn"
           label="支付流水号"
           width="170"
           show-overflow-tooltip
         />
-        <el-table-column v-if="isSearched" label="是否转账" width="90">
+        <el-table-column  label="是否转账" width="90">
           <template #default="{ row }">
             <el-tag :type="row.is_transfer === 0 ? 'info' : 'warning'">
               {{ row.is_transfer === 0 ? '否' : '是' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column v-if="isSearched" label="退款" width="80">
+        <el-table-column  label="退款" width="80">
           <template #default="{ row }">
             <el-tag :type="row.is_refund === 0 ? 'info' : 'danger'">
               {{ row.is_refund === 0 ? '否' : '是' }}
@@ -238,20 +231,16 @@ onMounted(() => {
           </template>
         </el-table-column>
         <el-table-column
-          v-if="isSearched"
           prop="refund_amount"
           label="退款金额"
           width="100"
         />
-        <el-table-column v-if="isSearched" prop="platform" label="平台" width="90" />
-        <el-table-column v-if="isSearched" prop="channel" label="渠道" width="90" />
-        <el-table-column v-if="isSearched" label="支付方式" width="110">
-          <template #default="{ row }">
-            {{ formatPayType(row.pay_type) }}
-          </template>
+        <el-table-column   prop="platform" label="平台" width="90" />
+        <el-table-column   prop="channel" label="渠道" width="90" />
+        <el-table-column prop="pay_type_name"  label="支付方式" width="110">
         </el-table-column>
         <el-table-column
-          v-if="isSearched"
+           
           prop="mark"
           label="备注信息"
           width="240"
@@ -260,16 +249,16 @@ onMounted(() => {
         <el-table-column
           prop="pay_time"
           label="支付时间"
-          :width="isSearched ? 180 : 160"
+          width="180"
         />
         <el-table-column
-          v-if="isSearched"
+           
           prop="created_at"
           label="创建时间"
           width="180"
         />
         <el-table-column
-          v-if="isSearched"
+           
           label="操作"
           width="100"
           align="center"

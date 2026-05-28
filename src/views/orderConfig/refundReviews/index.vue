@@ -166,24 +166,24 @@ const handleSelectionChange = (rows: RefundReviewItem[]) => {
 
 const getSelectedIds = () => selectedRows.value.map((item) => item.id)
 
-const handleReview = async (row: RefundReviewItem, status: 1 | 2) => {
+const handleReview = async (row: RefundReviewItem, status: 'accept' | 'reject') => {
   await reviewRefundOrder({
     id: row.id,
-    status,
+    type: status,
   })
-  ElMessage.success(status === 1 ? '审核通过成功' : '审核拒绝成功')
+  ElMessage.success(status === 'accept' ? '审核通过成功' : '审核拒绝成功')
   fetchTableData()
 }
 
 const handleApprove = async (row: RefundReviewItem) => {
-  await handleReview(row, 1)
+  await handleReview(row, 'accept')
 }
 
 const handleReject = async (row: RefundReviewItem) => {
-  await handleReview(row, 2)
+  await handleReview(row, 'reject')
 }
 
-const handleBatchReview = async (status: 1 | 2) => {
+const handleBatchReview = async (status: 'accept' | 'reject') => {
   const ids = getSelectedIds()
   if (!ids.length) {
     ElMessage.warning('请先选择要操作的订单')
@@ -192,9 +192,9 @@ const handleBatchReview = async (status: 1 | 2) => {
 
   await batchReviewRefundOrder({
     ids,
-    status,
+    type: status,
   })
-  ElMessage.success(status === 1 ? '批量通过成功' : '批量拒绝成功')
+  ElMessage.success(status === 'accept' ? '批量通过成功' : '批量拒绝成功')
   fetchTableData()
 }
 
@@ -395,8 +395,8 @@ onMounted(async () => {
     </el-card>
 
     <el-card shadow="never" class="m-t-10">
-      <el-button type="primary" plain :icon="Check" @click="handleBatchReview(1)">批量通过</el-button>
-        <el-button type="danger" plain :icon="Close" @click="handleBatchReview(2)">批量拒绝</el-button>
+      <el-button type="primary" plain :icon="Check" @click="handleBatchReview('accept')">批量通过</el-button>
+        <el-button type="danger" plain :icon="Close" @click="handleBatchReview('reject')">批量拒绝</el-button>
       <el-table
         v-loading="loading"
         :data="tableData"

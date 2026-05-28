@@ -7,8 +7,7 @@ import * as echarts from 'echarts'
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import type { ApiResponseData } from '@/utils/request'
 import { addInvestmentAmount, getNewUserConversionData } from '@/api/statistics'
-import { VERSION_CHANNEL_FILTER_OPTIONS } from '@/constants/version'
-
+import {PLATFORM_OPTIONS,CHANNEL_OPTIONS} from "@/utils/useConfig"
 interface ConversionRow {
   date: string | number
   put_in_total: number | string
@@ -88,6 +87,7 @@ const queryForm = reactive({
   channel: '' as string,
   dateRange: [] as string[],
   monthRange: [] as string[],
+  platform: '' as string,
 })
 
 const dialogVisible = ref(false)
@@ -213,10 +213,20 @@ onBeforeUnmount(() => {
             />
           </el-select>
         </el-form-item>
+         <el-form-item label="平台">
+          <el-select v-model="queryForm.platform" style="width: 160px" placeholder="请选择渠道">
+            <el-option
+              v-for="item in PLATFORM_OPTIONS"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="渠道">
           <el-select v-model="queryForm.channel" style="width: 160px" placeholder="请选择渠道">
             <el-option
-              v-for="item in VERSION_CHANNEL_FILTER_OPTIONS"
+              v-for="item in CHANNEL_OPTIONS"
               :key="item.value"
               :label="item.label"
               :value="item.value"

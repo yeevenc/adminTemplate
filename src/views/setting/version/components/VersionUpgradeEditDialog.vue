@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
-import { VERSION_CHANNEL_OPTIONS } from '@/constants/version'
+import { CHANNEL_OPTIONS } from '@/utils/useConfig'
 import type { VersionUpgradeChannel, VersionUpgradeItem, VersionUpgradePayload, VersionUpgradeStatus } from '@/views/setting/version/types'
 
 const props = defineProps<{
@@ -110,7 +110,7 @@ function handleSubmit() {
     <el-form label-position="left" label-width="auto">
       <el-form-item label="渠道">
         <el-radio-group v-model="form.channel">
-          <el-radio v-for="item in VERSION_CHANNEL_OPTIONS" :key="item.value" :value="item.value">
+          <el-radio v-for="item in CHANNEL_OPTIONS" :key="item.value" :value="item.value">
             {{ item.label }}
           </el-radio>
         </el-radio-group>
