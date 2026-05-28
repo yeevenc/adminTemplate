@@ -29,6 +29,8 @@ export default defineConfig(({ mode }) => {
         : undefined,
     },
     build: {
+      // 明确 CSS 目标，防止 esbuild 压缩时误删 backdrop-filter / -webkit-backdrop-filter
+      cssTarget: ['chrome79', 'edge79', 'firefox72', 'safari12.1'],
       // element-plus / echarts 本身体积较大，调高阈值避免无意义警告
       chunkSizeWarningLimit: 1500,
       rollupOptions: {

@@ -107,7 +107,7 @@ function handleCloseAll() {
   padding: 0 16px;
     background: var(--glass-card);
   backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  /* -webkit-backdrop-filter: blur(16px); */
   border-bottom: 1px solid var(--glass-border);
   flex-shrink: 0;
   position: relative;

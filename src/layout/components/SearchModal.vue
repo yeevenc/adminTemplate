@@ -201,7 +201,7 @@ watch(
     radial-gradient(ellipse at 80% 80%, rgba(140, 60, 255, 0.10) 0%, transparent 55%),
     rgba(8, 8, 20, 0.42);
   backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  /* -webkit-backdrop-filter: blur(12px) saturate(140%); */
 }
 
 /* 弹框主体 */
@@ -222,7 +222,7 @@ watch(
     );
   background-size: 200% 200%;
   backdrop-filter: blur(48px) saturate(220%) brightness(1.06);
-  -webkit-backdrop-filter: blur(48px) saturate(220%) brightness(1.06);
+  /* -webkit-backdrop-filter: blur(48px) saturate(220%) brightness(1.06); */
   border: 1px solid rgba(255, 255, 255, 0.55);
   box-shadow:
     inset 0 1.5px 0 rgba(255, 255, 255, 0.90),

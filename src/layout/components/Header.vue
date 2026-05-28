@@ -161,7 +161,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
   padding: 0 24px;
   background: var(--glass-card);
   backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  /* -webkit-backdrop-filter: blur(16px); */
   /* border-bottom: 1px solid var(--glass-border); */
 }
 

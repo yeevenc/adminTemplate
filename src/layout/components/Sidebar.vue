@@ -83,7 +83,7 @@ function onSelect(index: string) {
   flex-direction: column;
   background: var(--glass-card)!important;
   backdrop-filter: blur(40px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
+  /* -webkit-backdrop-filter: blur(16px) !important; */
    /* background: var(--glass-card);
     backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px); */

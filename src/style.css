@@ -1,5 +1,5 @@
-/* Google Fonts – Lora + Raleway */
-@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap');
+/* Google Fonts – Outfit */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
 /* ── CSS Custom Properties (set by theme store via JS) ── */
 :root {
@@ -25,7 +25,7 @@
   --text-muted: #64748B;
   --divider: rgba(255, 255, 255, 0.08);
 
-  font-family: 'Lora', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: 'Outfit', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   line-height: 1.6;
   font-weight: 400;
   font-synthesis: none;
@@ -67,7 +67,7 @@ a { color: inherit; text-decoration: none; }
 .glass-card {
   background: var(--glass-card);
   backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  /* -webkit-backdrop-filter: blur(16px) saturate(160%); */
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   transition: background 0.3s ease, box-shadow 0.3s ease;
@@ -84,7 +84,7 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid var(--glass-border) !important;
   border-radius: 16px !important;
   backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  /* -webkit-backdrop-filter: blur(16px); */
   color: var(--text-primary) !important;
   transition: all 0.3s ease;
 }

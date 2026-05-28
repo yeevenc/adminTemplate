@@ -194,7 +194,7 @@ onMounted(() => {
         <el-table-column prop="uid" label="用户ID" width="90" fixed="left" />
         <el-table-column prop="phone" label="用户手机号" width="120" fixed="left" />
         <el-table-column prop="order_id" label="订单号" width="210" show-overflow-tooltip />
-        <el-table-column label="状态" width="80">
+        <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.pay_status === 0 ? 'info' : 'success'">
               {{ row.pay_status === 0 ? '未支付' : '已支付' }}
