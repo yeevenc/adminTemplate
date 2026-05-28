@@ -176,7 +176,7 @@ defineExpose({
         <uploadImage
           v-model="form.cover_url"
           :limit="1"
-          :file-size="400"
+          :file-size="600"
         />
       </el-form-item>
 

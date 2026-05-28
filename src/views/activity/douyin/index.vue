@@ -209,7 +209,7 @@ onMounted(() => {
         </el-table-column>
         <el-table-column prop="updated_at" label="更新时间" min-width="170" />
         <el-table-column prop="created_at" label="创建时间" min-width="170" />
-        <el-table-column label="操作" align="center" fixed="right" width="140">
+        <el-table-column label="操作" align="center" fixed="right" width="150">
           <template #default="{ row }">
             <el-button
               link

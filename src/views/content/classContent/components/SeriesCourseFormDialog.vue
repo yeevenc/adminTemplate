@@ -184,7 +184,7 @@ defineExpose({
       </el-form-item>
 
       <el-form-item label="课程封面图">
-        <uploadImage v-model="form.thumb_img" />
+        <uploadImage v-model="form.thumb_img" :fileSize="600" />
       </el-form-item>
 
       <el-form-item label="是否免费" prop="is_vip">

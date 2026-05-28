@@ -342,7 +342,7 @@ defineExpose({
       </el-form-item>
 
       <el-form-item label="封面图">
-        <uploadImage v-model="form.thumb_img" />
+        <uploadImage v-model="form.thumb_img" :fileSize="500" />
       </el-form-item>
 
       <el-form-item v-if="isWhiteNoise" label="白噪音图标">
