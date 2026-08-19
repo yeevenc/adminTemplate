@@ -73,7 +73,6 @@ const resolveList = (data: SkuListResponse | SkuItem[] | undefined) => {
   if (Array.isArray(data?.data)) return data.data
   return []
 }
-
 // 分页总数优先取后端返回，兜底使用当前列表长度
 const resolveTotal = (data: SkuListResponse | SkuItem[] | undefined, list: SkuItem[]) => {
   if (Array.isArray(data)) return data.length
@@ -223,8 +222,10 @@ onMounted(async() => {
         <el-table-column prop="price" label="现价" width="90" />
         <el-table-column prop="first_price" label="首次优惠价" width="100" />
         <el-table-column prop="renew_price" label="续订价" width="90" />
-        <el-table-column prop="duration" label="会员时长(天)" width="110" />
-        <el-table-column prop="renew_duration" label="续订时长(天)" width="110" />
+        <el-table-column prop="duration" label="会员时长(天)" width="110">
+        </el-table-column>
+        <el-table-column prop="renew_duration" label="续订时长(天)" width="110">
+        </el-table-column>
         <el-table-column prop="give_sku_id" label="赠送Sku" width="100" />
         <el-table-column prop="wx_sku" label="微信Sku" width="100" />
         <el-table-column label="是否升级" width="90">

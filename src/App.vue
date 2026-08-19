@@ -5,7 +5,7 @@ import checkVersion from '@/components/checkVersion/index.vue'
 
 <template>
   <el-config-provider :locale="zhCn">
-    <RouterView />
+    <!-- <RouterView /> -->
     <checkVersion />
   </el-config-provider>
 </template>
